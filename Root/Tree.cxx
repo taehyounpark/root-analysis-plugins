@@ -9,6 +9,14 @@
 #include "ana/vecutils.h"
 #include "ana/sample.h"
 
+Tree::Tree(const std::string& treeName, std::initializer_list<const char*> allFiles) :
+	m_treeName(treeName),
+	m_allFiles(std::vector<std::string>(allFiles.begin(), allFiles.end()))
+{
+	ROOT::EnableThreadSafety();
+	ROOT::EnableImplicitMT();
+}
+
 Tree::Tree(const std::string& treeName, const std::vector<std::string>& allFiles) :
 	m_treeName(treeName),
 	m_allFiles(allFiles)

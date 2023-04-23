@@ -25,22 +25,40 @@ ROOT_GENERATE_DICTIONARY( RAnalysisDict RAnalysis/*.h
 )
 
 export(PACKAGE RAnalysis)
+set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/RAnalysis" )
+set(CONF_LIBRARY_DIRS "${PROJECT_BINARY_DIR}")
+set(CONF_LIBRARIES    RAnalysis)
+configure_file(config.cmake.in
+  "${PROJECT_BINARY_DIR}/config.cmake" @ONLY)
 
 install(DIRECTORY
   "${CMAKE_CURRENT_BINARY_DIR}/RAnalysis"
+  EXPORt RAnalysisConfig
   DESTINATION lib
   )
 
 set(RANALYSIS_PYTHONPATH ${CMAKE_CURRENT_BINARY_DIR})
 set(RANALYSIS_LD_LIBRARY_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
+
 install(
   TARGETS RAnalysis
   DESTINATION lib
 )
+
+file(COPY_FILE benchmarks/hww.root ${PROJECT_BINARY_DIR}/hww.root ONLY_IF_DIFFERENT)
+add_executable(hww benchmarks/hww.cxx)
+target_compile_features(hww PRIVATE cxx_std_17)
+target_include_directories(
+  hww
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS}
+)
+target_link_libraries(hww RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore)
 
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
 file(APPEND ${SETUP} "ulimit -S -s unlimited\n" )
 file(APPEND ${SETUP} "export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${RANALYSIS_LD_LIBRARY_PATH}\n")
 file(APPEND ${SETUP} "export DYLD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${RANALYSIS_LD_LIBRARY_PATH}\n")
+file(APPEND ${SETUP} "export DYLD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${RANALYSIS_LD_LIBRARY_PATH}\n")
+

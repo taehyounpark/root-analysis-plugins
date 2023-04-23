@@ -19,6 +19,7 @@ class Histogram<1,Prec> : public ana::counter::logic<std::shared_ptr<TH1>(Prec)>
 {
 
 public:
+	Histogram(const std::string& name, unsigned int nbins, double xmin, double xmax);
 	Histogram(const std::string& name, const std::vector<double>& xbins);
 	virtual ~Histogram() = default;
 
@@ -121,6 +122,14 @@ protected:
 };
 
 #include "RAnalysis/HistogramUtils.h"
+
+template <typename Prec>
+Histogram<1,Prec>::Histogram(const std::string& name, unsigned int nbins, double xmin, double xmax) :
+	ana::counter::logic<std::shared_ptr<TH1>(Prec)>(name)
+{
+	m_hist = HistogramUtils::makeHist<1,Prec>(nbins, xmin, xmax);
+	m_hist->SetName(name.c_str());
+}
 
 template <typename Prec>
 Histogram<1,Prec>::Histogram(const std::string& name, const std::vector<double>& xbins) :

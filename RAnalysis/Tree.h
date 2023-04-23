@@ -28,7 +28,8 @@ public:
 	class Branch;
 
 public:
-	Tree(const std::string& treeName = "", const std::vector<std::string>& allFiles = {});
+	Tree(const std::string& treeName, std::initializer_list<const char*> allFiles);
+	Tree(const std::string& treeName, const std::vector<std::string>& allFiles);
 	~Tree() = default;
 
 	ana::input::partition allocate();
@@ -38,9 +39,6 @@ protected:
 	std::string m_treeName;
 	std::vector<std::string> m_allFiles;
 	std::vector<std::string> m_goodFiles;
-
-public:
-	ClassDef(Tree,1);
 
 };
 
