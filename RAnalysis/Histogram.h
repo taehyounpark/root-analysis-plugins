@@ -27,8 +27,8 @@ public:
 	virtual void merge(std::shared_ptr<TH1> hist) override;
 
 protected:
-	/// histogram
-	std::shared_ptr<TH1> m_hist;
+	// histogram
+	std::shared_ptr<TH1> m_hist; //!
 
 };
 
@@ -45,7 +45,7 @@ public:
 	virtual void merge(std::shared_ptr<TH2> hist) override;
 
 protected:
-	std::shared_ptr<TH2> m_hist;
+	std::shared_ptr<TH2> m_hist; //!
 
 };
 
@@ -62,7 +62,7 @@ public:
 	virtual void merge(std::shared_ptr<TH3> hist) override;
 
 protected:
-	std::shared_ptr<TH3> m_hist;
+	std::shared_ptr<TH3> m_hist; //!
 
 };
 
@@ -79,8 +79,8 @@ public:
 	virtual void merge(std::shared_ptr<TH1> hist) override;
 
 protected:
-	/// histogram
-	std::shared_ptr<TH1> m_hist;
+	// histogram
+	std::shared_ptr<TH1> m_hist; //!
 
 };
 
@@ -97,8 +97,8 @@ public:
 	virtual void merge(std::shared_ptr<TH2> hist) override;
 
 protected:
-	/// histogram
-	std::shared_ptr<TH2> m_hist;
+	// histogram
+	std::shared_ptr<TH2> m_hist; //!
 
 };
 
@@ -115,12 +115,12 @@ public:
 	virtual void merge(std::shared_ptr<TH3> hist) override;
 
 protected:
-	/// histogram
-	std::shared_ptr<TH3> m_hist;
+	// histogram
+	std::shared_ptr<TH3> m_hist; //!
 
 };
 
-#include "AnalysisHelpers/HistogramUtils.h"
+#include "RAnalysis/HistogramUtils.h"
 
 template <typename Prec>
 Histogram<1,Prec>::Histogram(const std::string& name, const std::vector<double>& xbins) :
@@ -145,14 +145,14 @@ void Histogram<1,Prec>::merge(std::shared_ptr<TH1> hist)
 template <typename Prec>
 std::shared_ptr<TH1> Histogram<1,Prec>::result() const
 {
-	return m_hist;
+	return m_hist; //!
 }
 
 template <typename Prec>
 Histogram<2,Prec>::Histogram(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins) :
 	ana::counter::logic<std::shared_ptr<TH2>(Prec,Prec)>(name)
 {
-	m_hist = std::dynamic_pointer_cast<TH2>(HistogramUtils::makeHist<2,Prec>(xbins,ybins));
+	m_hist = std::static_pointer_cast<TH2>(HistogramUtils::makeHist<2,Prec>(xbins,ybins));
 	m_hist->SetName(name.c_str());
 }
 
@@ -171,14 +171,14 @@ void Histogram<2,Prec>::merge(std::shared_ptr<TH2> hist)
 template <typename Prec>
 std::shared_ptr<TH2> Histogram<2,Prec>::result() const
 {
-	return m_hist;
+	return m_hist; //!
 }
 
 template <typename Prec>
 Histogram<3,Prec>::Histogram(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins, const std::vector<double>& zbins) :
 	ana::counter::logic<std::shared_ptr<TH3>(Prec,Prec,Prec)>(name)
 {
-	m_hist = std::dynamic_pointer_cast<TH3>(HistogramUtils::makeHist<3,Prec>(xbins,ybins,zbins));
+	m_hist = std::static_pointer_cast<TH3>(HistogramUtils::makeHist<3,Prec>(xbins,ybins,zbins));
 	m_hist->SetName(name.c_str());
 }
 
@@ -197,7 +197,7 @@ void Histogram<3,Prec>::merge(std::shared_ptr<TH3> hist)
 template <typename Prec>
 std::shared_ptr<TH3> Histogram<3,Prec>::result() const
 {
-	return m_hist;
+	return m_hist; //!
 }
 
 // vector<T>
@@ -227,14 +227,14 @@ void Histogram<1,ROOT::RVec<Prec>>::merge(std::shared_ptr<TH1> hist)
 template <typename Prec>
 std::shared_ptr<TH1> Histogram<1,ROOT::RVec<Prec>>::result() const
 {
-	return m_hist;
+	return m_hist; //!
 }
 
 template <typename Prec>
 Histogram<2,ROOT::RVec<Prec>>::Histogram(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins) :
 	ana::counter::logic<std::shared_ptr<TH2>(ROOT::RVec<Prec>,ROOT::RVec<Prec>)>(name)
 {
-	m_hist = std::dynamic_pointer_cast<TH2>(HistogramUtils::makeHist<2,Prec>(xbins,ybins));
+	m_hist = std::static_pointer_cast<TH2>(HistogramUtils::makeHist<2,Prec>(xbins,ybins));
 	m_hist->SetName(name.c_str());
 }
 
@@ -256,14 +256,14 @@ void Histogram<2,ROOT::RVec<Prec>>::merge(std::shared_ptr<TH2> hist)
 template <typename Prec>
 std::shared_ptr<TH2> Histogram<2,ROOT::RVec<Prec>>::result() const
 {
-	return m_hist;
+	return m_hist; //!
 }
 
 template <typename Prec>
 Histogram<3,ROOT::RVec<Prec>>::Histogram(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins, const std::vector<double>& zbins) :
 	ana::counter::logic<std::shared_ptr<TH3>(ROOT::RVec<Prec>,ROOT::RVec<Prec>,ROOT::RVec<Prec>)>(name)
 {
-	m_hist = std::dynamic_pointer_cast<TH3>(HistogramUtils::makeHist<3,Prec>(xbins,ybins,zbins));
+	m_hist = std::static_pointer_cast<TH3>(HistogramUtils::makeHist<3,Prec>(xbins,ybins,zbins));
 	m_hist->SetName(name.c_str());
 }
 
@@ -286,7 +286,7 @@ void Histogram<3,ROOT::RVec<Prec>>::merge(std::shared_ptr<TH3> hist)
 template <typename Prec>
 std::shared_ptr<TH3> Histogram<3,ROOT::RVec<Prec>>::result() const
 {
-	return m_hist;
+	return m_hist; //!
 }
 
 template class Histogram<1,float>;

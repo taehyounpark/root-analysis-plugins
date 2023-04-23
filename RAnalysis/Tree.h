@@ -6,6 +6,7 @@
 
 #include <ROOT/RVec.hxx>
 
+#include "TROOT.h"
 #include "TDirectory.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -27,16 +28,19 @@ public:
 	class Branch;
 
 public:
-	Tree(const std::string& treeName, const std::vector<std::string>& inputFiles);
-	virtual ~Tree() = default;
+	Tree(const std::string& treeName = "", const std::vector<std::string>& allFiles = {});
+	~Tree() = default;
 
-	virtual ana::input::partition allocate() override;
+	ana::input::partition allocate();
 	std::shared_ptr<Reader> open(const ana::input::range& part) const;
 
 protected:
 	std::string m_treeName;
-	std::vector<std::string> m_inputFiles;
+	std::vector<std::string> m_allFiles;
 	std::vector<std::string> m_goodFiles;
+
+public:
+	ClassDef(Tree,1);
 
 };
 
@@ -54,7 +58,7 @@ public:
 
 protected:
 	std::unique_ptr<TTree>       m_tree; 
-	std::unique_ptr<TTreeReader> m_treeReader; 
+	std::unique_ptr<TTreeReader> m_treeReader;  
 
 };
 
@@ -83,7 +87,7 @@ public:
 protected:
   std::string m_branchName;
 	TTreeReader* m_treeReader;
-  std::unique_ptr<TTreeReaderValue<T>> m_treeReaderValue;
+  std::unique_ptr<TTreeReaderValue<T>> m_treeReaderValue;  
 
 };
 

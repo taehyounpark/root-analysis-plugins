@@ -1,8 +1,46 @@
 
 project(RAnalysis)
-include_directories("${PROJECT_SOURCE_DIR}")
 
-ROOT_GENERATE_DICTIONARY( RAnalysisDict RAnalysis/*.h ...
+file(GLOB RAnalysisHeaders ana/*.h*)
+file(GLOB RAnalysisSources Root/*.cxx)
+
+add_library( RAnalysis SHARED ${RAnalysisSources} ${RAnalysisHeaders})
+
+target_include_directories(
+  RAnalysis
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ANA_INCLUDE_DIRS}
+)
+
+target_compile_features(RAnalysis PRIVATE cxx_std_17)
+
+find_package( ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad ROOTVecOps Tree TreePlayer Rint Postscript Matrix Physics MathCore Thread MultiProc ROOTDataFrame )
+find_library(ROOT_TREEPLAYER_LIBRARY TreePlayer HINTS ${ROOT_LIBRARY_DIR} REQUIRED)
+target_link_libraries(RAnalysis ana ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps)
+
+# target_compile_features(RAnalysis PRIVATE cxx_std_17)
+
+ROOT_GENERATE_DICTIONARY( RAnalysisDict RAnalysis/*.h
    LINKDEF Root/LinkDef.h
    MODULE RAnalysis
 )
+
+export(PACKAGE RAnalysis)
+
+install(DIRECTORY
+  "${CMAKE_CURRENT_BINARY_DIR}/RAnalysis"
+  DESTINATION lib
+  )
+
+set(RANALYSIS_PYTHONPATH ${CMAKE_CURRENT_BINARY_DIR})
+set(RANALYSIS_LD_LIBRARY_PATH ${CMAKE_CURRENT_BINARY_DIR})
+
+install(
+  TARGETS RAnalysis
+  DESTINATION lib
+)
+
+set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
+file(WRITE ${SETUP} "#!/bin/bash\n")
+file(APPEND ${SETUP} "ulimit -S -s unlimited\n" )
+file(APPEND ${SETUP} "export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${RANALYSIS_LD_LIBRARY_PATH}\n")
+file(APPEND ${SETUP} "export DYLD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${RANALYSIS_LD_LIBRARY_PATH}\n")

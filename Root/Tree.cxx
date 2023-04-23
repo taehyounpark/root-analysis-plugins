@@ -1,4 +1,4 @@
-#include "AnalysisHelpers/Tree.h"
+#include "RAnalysis/Tree.h"
 
 #include "TROOT.h"
 #include "TTreeReader.h"
@@ -9,9 +9,9 @@
 #include "ana/vecutils.h"
 #include "ana/sample.h"
 
-Tree::Tree(const std::string& treeName, const std::vector<std::string>& inputFiles) :
+Tree::Tree(const std::string& treeName, const std::vector<std::string>& allFiles) :
 	m_treeName(treeName),
-	m_inputFiles(inputFiles)
+	m_allFiles(allFiles)
 {
 	ROOT::EnableThreadSafety();
 	ROOT::EnableImplicitMT();
@@ -20,12 +20,12 @@ Tree::Tree(const std::string& treeName, const std::vector<std::string>& inputFil
 ana::input::partition Tree::allocate()
 {
 	TDirectory::TContext c;
-	ana::input::partition partition;
+	ana::input::partition parts;
 
 	// offset to account for global entry position
 	long long offset = 0ll;
 	size_t islot=0;
-	for (const auto& filePath : m_inputFiles) {
+	for (const auto& filePath : m_allFiles) {
 		// check file
 		std::unique_ptr<TFile> file(TFile::Open(filePath.c_str()));
 		if (!file) {
@@ -49,13 +49,13 @@ ana::input::partition Tree::allocate()
 		long long start = 0ll, end = 0ll;
 		while ( (start=clusterIterator.Next())<fileEntries ) {
 			end = clusterIterator.GetNextEntry();
-			partition.add(islot++, offset+start, offset+end);
+			parts.add(islot++, offset+start, offset+end);
 		}
 		// remember offset for next file
 		offset += fileEntries;
 	}
 
-	return partition;
+	return parts;
 }
 
 std::shared_ptr<Tree::Reader> Tree::open(const ana::input::range& part) const

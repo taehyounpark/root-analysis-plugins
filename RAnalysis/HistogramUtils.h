@@ -7,6 +7,10 @@
 #include "TH2.h"
 #include "TH3.h"
 
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TH3F.h"
+
 #include "ana/vecutils.h"
 
 namespace HistogramUtils
@@ -22,33 +26,33 @@ namespace HistogramUtils
 		std::shared_ptr<TH1> hist;
 		if constexpr(Dim==1) {
 			if constexpr(std::is_same_v<Prec,char> || std::is_same_v<Prec,bool>) {
-				hist = std::make_shared<TH1C>("","",xbins.size()-1,&xbins[0]);
+				hist = std::shared_ptr<TH1C>(new TH1C("","",xbins.size()-1,&xbins[0]));
 			} else if constexpr(std::is_same_v<Prec,int>) {
-				hist = std::make_shared<TH1I>("","",xbins.size()-1,&xbins[0]);
+				hist = std::shared_ptr<TH1I>(new TH1I("","",xbins.size()-1,&xbins[0]));
 			} else if constexpr(std::is_same_v<Prec,float>) {
-				hist = std::make_shared<TH1F>("","",xbins.size()-1,&xbins[0]);
+				hist = std::shared_ptr<TH1F>(new TH1F("","",xbins.size()-1,&xbins[0]));
 			} else if constexpr(std::is_same_v<Prec,double>) {
-				hist = std::make_shared<TH1D>("","",xbins.size()-1,&xbins[0]);
+				hist = std::shared_ptr<TH1D>(new TH1D("","",xbins.size()-1,&xbins[0]));
 			}
 		} else if constexpr(Dim==2) {
 			if constexpr(std::is_same_v<Prec,char> || std::is_same_v<Prec,bool>) {
-				hist = std::make_shared<TH2C>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]);
+				hist = std::shared_ptr<TH2C>(new TH2C("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]));
 			} else if constexpr(std::is_same_v<Prec,int>) {
-				hist = std::make_shared<TH2I>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]);
+				hist = std::shared_ptr<TH2I>(new TH2I("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]));
 			} else if constexpr(std::is_same_v<Prec,float>) {
-				hist = std::make_shared<TH2F>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]);
+				hist = std::shared_ptr<TH2F>(new TH2F("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]));
 			} else if constexpr(std::is_same_v<Prec,double>) {
-				hist = std::make_shared<TH2D>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]);
+				hist = std::shared_ptr<TH2D>(new TH2D("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0]));
 			}
 		} else if constexpr(Dim==3) {
 			if constexpr(std::is_same_v<Prec,char> || std::is_same_v<Prec,bool>) {
-				hist = std::make_shared<TH3C>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]);
+				hist = std::shared_ptr<TH3C>(new TH3C("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]));
 			} else if constexpr(std::is_same_v<Prec,int>) {
-				hist = std::make_shared<TH3I>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]);
+				hist = std::shared_ptr<TH3I>(new TH3I("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]));
 			} else if constexpr(std::is_same_v<Prec,float>) {
-				hist = std::make_shared<TH3F>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]);
+				hist = std::shared_ptr<TH3F>(new TH3F("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]));
 			} else if constexpr(std::is_same_v<Prec,double>) {
-				hist = std::make_shared<TH3D>("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]);
+				hist = std::shared_ptr<TH3D>(new TH3D("","",xbins.size()-1,&xbins[0],ybins.size()-1,&ybins[0],zbins.size()-1,&zbins[0]));
 			}
 		}
 		hist->SetDirectory(nullptr);
@@ -63,33 +67,33 @@ namespace HistogramUtils
 		std::shared_ptr<TH1> hist = nullptr;
 		if constexpr(Dim==1) {
 			if constexpr(std::is_same_v<Prec,char> || std::is_same_v<Prec,bool>) {
-				hist = std::make_shared<TH1C>("","",nxbins,xmin,xmax);
+				hist = std::shared_ptr<TH1C>(new TH1C("","",nxbins,xmin,xmax));
 			} else if constexpr(std::is_same_v<Prec,int>) {
-				hist = std::make_shared<TH1I>("","",nxbins,xmin,xmax);
+				hist = std::shared_ptr<TH1I>(new TH1I("","",nxbins,xmin,xmax));
 			} else if constexpr(std::is_same_v<Prec,float>) {
-				hist = std::make_shared<TH1F>("","",nxbins,xmin,xmax);
+				hist = std::shared_ptr<TH1F>(new TH1F("","",nxbins,xmin,xmax));
 			} else if constexpr(std::is_same_v<Prec,double>) {
-				hist = std::make_shared<TH1D>("","",nxbins,xmin,xmax);
+				hist = std::shared_ptr<TH1D>(new TH1D("","",nxbins,xmin,xmax));
 			}
 		} else if constexpr(Dim==2) {
 			if constexpr(std::is_same_v<Prec,char> || std::is_same_v<Prec,bool>) {
-				hist = std::make_shared<TH2C>("","",nxbins,xmin,xmax,nybins,ymin,ymax);
+				hist = std::shared_ptr<TH2C>(new TH2C("","",nxbins,xmin,xmax,nybins,ymin,ymax));
 			} else if constexpr(std::is_same_v<Prec,int>) {
-				hist = std::make_shared<TH2I>("","",nxbins,xmin,xmax,nybins,ymin,ymax);
+				hist = std::shared_ptr<TH2I>(new TH2I("","",nxbins,xmin,xmax,nybins,ymin,ymax));
 			} else if constexpr(std::is_same_v<Prec,float>) {
-				hist = std::make_shared<TH2F>("","",nxbins,xmin,xmax,nybins,ymin,ymax);
+				hist = std::shared_ptr<TH2F>(new TH2F("","",nxbins,xmin,xmax,nybins,ymin,ymax));
 			} else if constexpr(std::is_same_v<Prec,double>) {
-				hist = std::make_shared<TH2D>("","",nxbins,xmin,xmax,nybins,ymin,ymax);
+				hist = std::shared_ptr<TH2D>(new TH2D("","",nxbins,xmin,xmax,nybins,ymin,ymax));
 			}
 		} else if constexpr(Dim==3) {
 			if constexpr(std::is_same_v<Prec,char> || std::is_same_v<Prec,bool>) {
-				hist = std::make_shared<TH3C>("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax);
+				hist = std::shared_ptr<TH3C>(new TH3C("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax));
 			} else if constexpr(std::is_same_v<Prec,int>) {
-				hist = std::make_shared<TH3I>("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax);
+				hist = std::shared_ptr<TH3I>(new TH3I("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax));
 			} else if constexpr(std::is_same_v<Prec,float>) {
-				hist = std::make_shared<TH3F>("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax);
+				hist = std::shared_ptr<TH3F>(new TH3F("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax));
 			} else if constexpr(std::is_same_v<Prec,double>) {
-				hist = std::make_shared<TH3D>("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax);
+				hist = std::shared_ptr<TH3D>(new TH3D("","",nxbins,xmin,xmax,nybins,ymin,ymax,nzbins,zmin,zmax));
 			}
 		}
 		hist->SetDirectory(nullptr);

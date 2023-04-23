@@ -26,9 +26,11 @@
 #include "ana/strutils.h"
 #include "ana/vecutils.h"
 
-#include "AnalysisHelpers/Histogram.h"
+#include "RAnalysis/Histogram.h"
+#include "RAnalysis/Tree.h"
 
 #ifdef __CINT__
+
 
 #pragma link off all functions;
 #pragma link off all classes;
@@ -53,9 +55,7 @@
 #pragma link C++ class ana::multithread+;
 #pragma link C++ class ana::concurrent<ana::term<float>>+;
 
-#pragma link C++ class RDS+;
-#pragma link C++ class Tree+;
-#pragma link C++ class Event+;
+#pragma link C++ class Tree;
 
 #pragma link C++ class Histogram<1,float>+;
 #pragma link C++ class Histogram<2,float>+;
@@ -63,9 +63,6 @@
 #pragma link C++ class Histogram<1,ROOT::RVec<float>>+;
 #pragma link C++ class Histogram<2,ROOT::RVec<float>>+;
 #pragma link C++ class Histogram<3,ROOT::RVec<float>>+;
-
-#pragma link C++ class Scan<1,float>+;
-#pragma link C++ class Scan<2,float>+;
 
 #pragma link C++ class ana::sample<Tree>+;
 #pragma link C++ class ana::analysis<Tree>+;
