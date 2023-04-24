@@ -49,7 +49,7 @@ public:
 	~Reader() = default;
 
 	template <typename U>
-	std::shared_ptr<Branch<U>> read(const std::string& columnName, std::string branchName="") const;
+	std::shared_ptr<Branch<U>> read(const std::string& branchName) const;
 
 	virtual void begin() override;
 	virtual bool next() override;
@@ -65,8 +65,8 @@ class Tree::Branch : public ana::column::reader<T>
 {
 
 public:
-	Branch(const std::string& columnName, const std::string& branchName, TTreeReader& treeReader) :
-		ana::column::reader<T>(columnName),
+	Branch(const std::string& branchName, TTreeReader& treeReader) :
+		ana::column::reader<T>(branchName),
 		m_branchName(branchName),
 		m_treeReader(&treeReader)
 	{}
@@ -94,8 +94,8 @@ class Tree::Branch<ROOT::RVec<T>> : public ana::column::reader<ROOT::RVec<T>>
 {
 
 public:
-	Branch(const std::string& columnName, const std::string& branchName, TTreeReader& treeReader) :
-		ana::column::reader<ROOT::RVec<T>>(columnName),
+	Branch(const std::string& branchName, TTreeReader& treeReader) :
+		ana::column::reader<ROOT::RVec<T>>(branchName),
 		m_branchName(branchName),
 		m_treeReader(&treeReader)
 	{}
@@ -131,8 +131,8 @@ class Tree::Branch<ROOT::RVec<bool>> : public ana::column::reader<ROOT::RVec<boo
 {
 
 public:
-	Branch(const std::string& columnName, const std::string& branchName, TTreeReader& treeReader) :
-		ana::column::reader<ROOT::RVec<bool>>(columnName),
+	Branch(const std::string& branchName, TTreeReader& treeReader) :
+		ana::column::reader<ROOT::RVec<bool>>(branchName),
 		m_branchName(branchName),
 		m_treeReader(&treeReader)
 	{}
@@ -163,9 +163,9 @@ protected:
 
 };
 
+
 template <typename U>
-std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const std::string& columnName, std::string branchName) const
+std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const std::string& branchName) const
 {
-	if (branchName.empty()) branchName = columnName;
-	return std::make_shared<Branch<U>>(columnName,branchName,*m_treeReader);
+	return std::make_shared<Branch<U>>(branchName,*m_treeReader);
 }

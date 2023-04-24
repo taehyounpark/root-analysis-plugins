@@ -26,8 +26,10 @@
 #include "ana/strutils.h"
 #include "ana/vecutils.h"
 
-#include "RAnalysis/Histogram.h"
 #include "RAnalysis/Tree.h"
+#include "RAnalysis/CsvData.h"
+
+#include "RAnalysis/Histogram.h"
 
 #ifdef __CINT__
 
@@ -56,6 +58,7 @@
 #pragma link C++ class ana::concurrent<ana::term<float>>+;
 
 #pragma link C++ class Tree;
+#pragma link C++ class CsvData;
 
 #pragma link C++ class Histogram<1,float>+;
 #pragma link C++ class Histogram<2,float>+;

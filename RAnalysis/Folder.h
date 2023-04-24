@@ -25,14 +25,14 @@ public:
     m_resultAtPath.emplace(std::make_pair(selectionPath,counterResult));
   }
 
-  void report(const std::string& counterName, TFile& outputFile)
+  void report(TFile& outputFile)
   {
     auto baseFolder = m_basePath.empty() ? &outputFile : this->getDirectory(outputFile, m_basePath);
     for (const auto& pathAndResult : m_resultAtPath) {
       auto selectionPath = pathAndResult.first;
       auto counterResult = pathAndResult.second;
       auto selectionFolder = this->getDirectory(*baseFolder, selectionPath);
-      selectionFolder->WriteObject(counterResult->Clone(), counterName.c_str());
+      selectionFolder->WriteObject(counterResult->Clone(), counterResult->GetName());
     }
   }
 

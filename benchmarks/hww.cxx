@@ -5,6 +5,7 @@
 
 #include <ROOT/RVec.hxx>
 #include "TPad.h"
+#include "TFile.h"
 #include "TLorentzVector.h"
 #include "TVector2.h"
 #include "TH1F.h"
@@ -13,13 +14,14 @@
 #include "ana/selection.h"
 #include "ana/column.h"
 #include "ana/definition.h"
+#include "ana/output.h"
 
 #include "RAnalysis/Tree.h"
 #include "RAnalysis/Histogram.h"
+#include "RAnalysis/Folder.h"
 
 class NthFourMomentum : public ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
 {
-
 public:
   NthFourMomentum(const std::string& name, unsigned int index=0) : 
     ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>(name),
@@ -35,7 +37,6 @@ public:
 
 protected:
   unsigned int m_index;
-
 };
  
 int main(int argc, char* argv[]) {
@@ -51,40 +52,39 @@ int main(int argc, char* argv[]) {
 
   data.open("mini", std::vector<std::string>{"hww.root"});
 
-  auto mcEventWeight = data.read<float>("mcEventWeight", "mcWeight");
-  auto puScaleFactor = data.read<float>("puScaleFactor", "scaleFactor_PILEUP");
-  auto btagScaleFactor = data.read<float>("btagScaleFactor", "scaleFactor_BTAG");
-  auto elScaleFactor = data.read<float>("elScaleFactor", "scaleFactor_ELE");
-  auto muScaleFactor = data.read<float>("muScaleFactor", "scaleFactor_MUON");
-  auto trigScaleFactor = data.read<float>("trigScaleFactor", "scaleFactor_TRIGGER");
-  auto jvfScaleFactor = data.read<float>("jvfScaleFactor", "scaleFactor_JVFSF");
-  auto zvtxScaleFactor = data.read<float>("zvtxScaleFactor", "scaleFactor_ZVERTEX");
+  auto mcEventWeight = data.read<float>("mcWeight");
+  auto puScaleFactor = data.read<float>("scaleFactor_PILEUP");
+  auto btagScaleFactor = data.read<float>("scaleFactor_BTAG");
+  auto elScaleFactor = data.read<float>("scaleFactor_ELE");
+  auto muScaleFactor = data.read<float>("scaleFactor_MUON");
+  auto trigScaleFactor = data.read<float>("scaleFactor_TRIGGER");
+  auto jvfScaleFactor = data.read<float>("scaleFactor_JVFSF");
+  auto zvtxScaleFactor = data.read<float>("scaleFactor_ZVERTEX");
 
   data.filter<ana::selection::weight>("mcEventWeight", mcEventWeight);
-  data.filter<ana::selection::weight>("puScaleFactor", puScaleFactor);
-  data.filter<ana::selection::weight>("btagScaleFactor", btagScaleFactor);
-  data.filter<ana::selection::weight>("elecScaleFactor", elScaleFactor);
-  data.filter<ana::selection::weight>("muonScaleFactor", muScaleFactor);
-  data.filter<ana::selection::weight>("trigScaleFactor", trigScaleFactor);
-  data.filter<ana::selection::weight>("jvfScaleFactor", jvfScaleFactor);
-  data.filter<ana::selection::weight>("zvtxScaleFactor", zvtxScaleFactor);
+  // data.filter<ana::selection::weight>("puScaleFactor", puScaleFactor);
+  // data.filter<ana::selection::weight>("btagScaleFactor", btagScaleFactor);
+  // data.filter<ana::selection::weight>("elecScaleFactor", elScaleFactor);
+  // data.filter<ana::selection::weight>("muonScaleFactor", muScaleFactor);
+  // data.filter<ana::selection::weight>("trigScaleFactor", trigScaleFactor);
+  // data.filter<ana::selection::weight>("jvfScaleFactor", jvfScaleFactor);
+  // data.filter<ana::selection::weight>("zvtxScaleFactor", zvtxScaleFactor);
 
-  auto nlep = data.read<unsigned int>("nlep", "lep_n");
-  auto lepPts = data.read<ROOT::RVec<float>>("lepPts", "lep_pt");
-  auto lepEtas = data.read<ROOT::RVec<float>>("lepEtas", "lep_eta");
-  auto lepPhis = data.read<ROOT::RVec<float>>("lepPhis", "lep_phi");
-  auto lepEs = data.read<ROOT::RVec<float>>("lepEs", "lep_E");
-  auto lepCharges = data.read<ROOT::RVec<float>>("lepCharges", "lep_charge");
-  auto lepTypes = data.read<ROOT::RVec<unsigned int>>("lepTypes", "lep_type");
+  auto nlep = data.read<unsigned int>("lep_n");
+  auto lepPts = data.read<ROOT::RVec<float>>("lep_pt");
+  auto lepEtas = data.read<ROOT::RVec<float>>("lep_eta");
+  auto lepPhis = data.read<ROOT::RVec<float>>("lep_phi");
+  auto lepEs = data.read<ROOT::RVec<float>>("lep_E");
+  auto lepCharges = data.read<ROOT::RVec<float>>("lep_charge");
+  auto lepTypes = data.read<ROOT::RVec<unsigned int>>("lep_type");
+  auto met = data.read<float>("met_et");
+  auto metPhi = data.read<float>("met_phi");
 
   auto leadLepP4 = data.define<NthFourMomentum>("leadLepP4", 0);
   leadLepP4.evaluate(lepPts, lepEtas, lepPhis, lepEs);
 
   auto subleadLepP4 = data.define<NthFourMomentum>("subleadLepP4", 1);
   subleadLepP4.evaluate(lepPts, lepEtas, lepPhis, lepEs);
-
-  auto met = data.read<float>("met", "met_et");
-  auto metPhi = data.read<float>("metPhi", "met_phi");
 
   auto dilepP4 = data.evaluate("dilepP4", [](const TLorentzVector& p4, const TLorentzVector& q4){return (p4+q4);}, leadLepP4,subleadLepP4 );
   auto higgsPt = data.evaluate("higgsPt",
@@ -96,21 +96,19 @@ int main(int argc, char* argv[]) {
     dilepP4, met, metPhi
   );
 
-  // data.filter<ana::selection::cut>("dataQuality", )
-
   auto cut2l = data.filter<ana::selection::cut>("2l", [](const int& nlep){return (nlep == 2);}, nlep);
-  auto cut2los = cut2l.filter<ana::selection::cut>("2los", [](const ROOT::RVec<float>& lep_charge){return (lep_charge.at(0) + lep_charge.at(1) == 0);}, lepCharges);
-  auto cut2ldf = cut2l.filter<ana::selection::cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return (lep_type.at(0) + lep_type.at(1) == 24);}, lepTypes);
-  auto cut2lsf = cut2l.filter<ana::selection::cut>("2lsf", [](const ROOT::RVec<int>& lep_type){return ((lep_type.at(0) + lep_type.at(1) == 22) || (lep_type.at(0) + lep_type.at(1) == 26));}, lepTypes);
+  auto cut2los = data.channel<ana::selection::cut>("2los", [](const ROOT::RVec<float>& lep_charge){return (lep_charge.at(0) + lep_charge.at(1) == 0);}, lepCharges);
+  auto cut2ldf = cut2los.filter<ana::selection::cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return (lep_type.at(0) + lep_type.at(1) == 24);}, lepTypes);
+  auto cut2lsf = cut2los.filter<ana::selection::cut>("2lsf", [](const ROOT::RVec<int>& lep_type){return ((lep_type.at(0) + lep_type.at(1) == 22) || (lep_type.at(0) + lep_type.at(1) == 26));}, lepTypes);
 
-  auto higgsPtSpectrum = data.count<Histogram<1,float>>("higgsPtSpectrum", 100,0,200000);
+  auto higgsPtSpectrum = data.count<Histogram<1,float>>("higgsPtSpectrum", 100,0,2e5);
   higgsPtSpectrum.fill(higgsPt);
-  higgsPtSpectrum.book(cut2ldf, cut2lsf);
+  higgsPtSpectrum.book(cut2los, cut2ldf, cut2lsf);
 
   // data analysis is not executed until results are accessed
-  auto higgsPtSpectrum_2ldf = higgsPtSpectrum["2ldf"].result();
+  auto higgsPtSpectrum_2ldf = higgsPtSpectrum["2los/2ldf"].result();
   // all other results are already obtained instantaneously
-  auto higgsPtSpectrum_2lsf = higgsPtSpectrum["2lsf"].result();
+  auto higgsPtSpectrum_2lsf = higgsPtSpectrum["2los/2lsf"].result();
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
@@ -118,6 +116,10 @@ int main(int argc, char* argv[]) {
   higgsPtSpectrum_2ldf->Draw();
   higgsPtSpectrum_2lsf->Draw("same");
   gPad->Print("higgsPt.pdf");
+
+  auto outputFile = TFile::Open("hww_results.root","recreate");
+  ana::output::dump<Folder>(higgsPtSpectrum,*outputFile);
+  delete outputFile;
 
   return 0;
 }
