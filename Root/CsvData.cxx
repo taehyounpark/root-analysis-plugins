@@ -22,7 +22,7 @@ ana::input::partition CsvData::allocate()
   auto slots = m_rds->GetEntryRanges();
   ana::input::partition partition;
   for (size_t islot=0 ; islot<slots.size() ; ++islot) {
-    partition.add(islot, slots[islot].first, slots[islot].second);
+    partition.add_part(islot, slots[islot].first, slots[islot].second);
   }
   // allocation is determined by ROOT -- fix partition to indicate this
   partition.fixed = true;

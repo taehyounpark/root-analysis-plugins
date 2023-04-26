@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   if (argc) { strthreads << argv[1]; strthreads >> nthreads; };
   nthreads ? ana::multithread::enable(nthreads) : ana::multithread::disable();
 
-  auto data = ana::analysis<CsvData>();
+  ana::analysis<CsvData> data(100000);
   data.open("mumu.csv");
 
   auto Q1 = data.read<Long64_t>("Q1");

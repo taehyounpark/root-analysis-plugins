@@ -1,4 +1,4 @@
-#include "RAnalysis/Tree.h"
+#include "RAnalysis/TreeData.h"
 
 #include "TROOT.h"
 #include "TTreeReader.h"
@@ -9,7 +9,7 @@
 #include "ana/vecutils.h"
 #include "ana/sample.h"
 
-Tree::Tree(const std::string& treeName, std::initializer_list<const char*> allFiles) :
+TreeData::TreeData(const std::string& treeName, std::initializer_list<const char*> allFiles) :
 	m_treeName(treeName),
 	m_allFiles(std::vector<std::string>(allFiles.begin(), allFiles.end()))
 {
@@ -17,7 +17,7 @@ Tree::Tree(const std::string& treeName, std::initializer_list<const char*> allFi
 	ROOT::EnableImplicitMT();
 }
 
-Tree::Tree(const std::string& treeName, const std::vector<std::string>& allFiles) :
+TreeData::TreeData(const std::string& treeName, const std::vector<std::string>& allFiles) :
 	m_treeName(treeName),
 	m_allFiles(allFiles)
 {
@@ -25,7 +25,7 @@ Tree::Tree(const std::string& treeName, const std::vector<std::string>& allFiles
 	ROOT::EnableImplicitMT();
 }
 
-ana::input::partition Tree::allocate()
+ana::input::partition TreeData::allocate()
 {
 	TDirectory::TContext c;
 	ana::input::partition parts;
@@ -57,7 +57,7 @@ ana::input::partition Tree::allocate()
 		long long start = 0ll, end = 0ll;
 		while ( (start=clusterIterator.Next())<fileEntries ) {
 			end = clusterIterator.GetNextEntry();
-			parts.add(islot++, offset+start, offset+end);
+			parts.add_part(islot++, offset+start, offset+end);
 		}
 		// remember offset for next file
 		offset += fileEntries;
@@ -66,7 +66,7 @@ ana::input::partition Tree::allocate()
 	return parts;
 }
 
-std::shared_ptr<Tree::Reader> Tree::open(const ana::input::range& part) const
+std::shared_ptr<TreeData::Reader> TreeData::open(const ana::input::range& part) const
 {
 	auto tree = std::make_unique<TChain>(m_treeName.c_str(),m_treeName.c_str());
 	tree->ResetBit(kMustCleanup);
@@ -76,19 +76,19 @@ std::shared_ptr<Tree::Reader> Tree::open(const ana::input::range& part) const
 	return std::make_shared<Reader>(part,std::move(tree));
 }
 
-Tree::Reader::Reader(const ana::input::range& part, std::unique_ptr<TTree> tree) :
+TreeData::Reader::Reader(const ana::input::range& part, std::unique_ptr<TTree> tree) :
 	ana::input::reader<Reader>(part),
 	m_tree(std::move(tree))
 {
 	m_treeReader = std::make_unique<TTreeReader>(m_tree.get());
 }
 
-void Tree::Reader::begin()
+void TreeData::Reader::begin()
 {
 	m_treeReader->SetEntriesRange(m_part.begin,m_part.end);
 }
 
-bool Tree::Reader::next()
+bool TreeData::Reader::next()
 {
 	return m_treeReader->Next();
 }

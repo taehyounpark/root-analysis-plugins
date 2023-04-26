@@ -48,7 +48,9 @@ int main(int argc, char* argv[]) {
   if (argc) { strthreads << argv[1]; strthreads >> nthreads; };
   nthreads ? ana::multithread::enable(nthreads) : ana::multithread::disable();
 
-  auto data = ana::analysis<Tree>();
+  // ana::analysis<Tree> data;
+
+  auto data = ana::analysis<TreeData>();
 
   data.open("mini", std::vector<std::string>{"hww.root"});
 

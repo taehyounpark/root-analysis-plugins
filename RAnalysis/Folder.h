@@ -6,7 +6,7 @@
 
 #include "ana/counter.h"
 
-class Folder : public ana::counter::reporter<Folder>
+class Folder : public ana::counter::summary<Folder>
 {
 
 public:
@@ -35,7 +35,6 @@ public:
       selectionFolder->WriteObject(counterResult->Clone(), counterResult->GetName());
     }
   }
-
 
 public:
   std::string m_basePath;
