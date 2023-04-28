@@ -2,6 +2,7 @@
 
 #include "TROOT.h"
 
+#include "ana/concurrent.h"
 #include "ana/strutils.h"
 #include "ana/vecutils.h"
 

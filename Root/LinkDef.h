@@ -67,8 +67,8 @@
 #pragma link C++ class Histogram<2,ROOT::RVec<float>>+;
 #pragma link C++ class Histogram<3,ROOT::RVec<float>>+;
 
-#pragma link C++ class ana::sample<Tree>+;
-#pragma link C++ class ana::analysis<Tree>+;
+#pragma link C++ class ana::sample<TreeData>+;
+#pragma link C++ class ana::analysis<CsvData>+;
 
 #pragma link C++ class ana::output+;
 #pragma link C++ class Folder+;

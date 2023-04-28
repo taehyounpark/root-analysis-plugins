@@ -47,14 +47,14 @@ install(
   DESTINATION lib
 )
 
-file(COPY_FILE benchmarks/hww.root ${PROJECT_BINARY_DIR}/hww.root ONLY_IF_DIFFERENT)
-add_executable(hww benchmarks/hww.cxx)
-target_compile_features(hww PRIVATE cxx_std_17)
-target_include_directories(
-  hww
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS}
-)
-target_link_libraries(hww RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
+# file(COPY_FILE benchmarks/hww.root ${PROJECT_BINARY_DIR}/hww.root ONLY_IF_DIFFERENT)
+# add_executable(hww benchmarks/hww.cxx)
+# target_compile_features(hww PRIVATE cxx_std_17)
+# target_include_directories(
+#   hww
+#   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS}
+# )
+# target_link_libraries(hww RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
 
 file(COPY_FILE benchmarks/mumu.csv ${PROJECT_BINARY_DIR}/mumu.csv ONLY_IF_DIFFERENT)
 add_executable(mumu benchmarks/mumu.cxx)
@@ -65,14 +65,14 @@ target_include_directories(
 )
 target_link_libraries(mumu RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
 
-# file(COPY_FILE benchmarks/mumu.csv ${PROJECT_BINARY_DIR}/mumu.csv ONLY_IF_DIFFERENT)
-add_executable(systematic_variations examples/systematic_variations.cxx)
-target_compile_features(systematic_variations PRIVATE cxx_std_17)
-target_include_directories(
-  systematic_variations
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS}
-)
-target_link_libraries(systematic_variations RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
+# # file(COPY_FILE benchmarks/mumu.csv ${PROJECT_BINARY_DIR}/mumu.csv ONLY_IF_DIFFERENT)
+# add_executable(systematic_variations examples/systematic_variations.cxx)
+# target_compile_features(systematic_variations PRIVATE cxx_std_17)
+# target_include_directories(
+#   systematic_variations
+#   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS}
+# )
+# target_link_libraries(systematic_variations RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
 
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
