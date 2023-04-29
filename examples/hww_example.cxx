@@ -71,6 +71,9 @@ int main(int argc, char* argv[]) {
   auto lep_pt = lep_pt_MeV / GeV;
   auto lep_E = lep_E_MeV / GeV;
   auto met = met_MeV / GeV;
+  // auto lep_pt = data.define([](ROOT::RVec<float> const& pt){return pt / 1000.0;})(lep_pt_MeV);
+  // auto lep_E = data.define([](ROOT::RVec<float> const& E){return E / 1000.0;})(lep_E_MeV);
+  // auto met = data.define([](float E){return E / 1000.0;})(met_MeV);
 
   auto l1p4 = data.define<ScaledP4>(0)\
                   .vary("lep_p4_up",0,1.1)\
@@ -89,14 +92,13 @@ int main(int argc, char* argv[]) {
       TVector2 met2d; met2d.SetMagPhi(met, met_phi);
       return (ptll+met2d).Mod();
     })(llp4, met, met_phi);
-  std::cout << pth.list_variation_names().size() << std::endl;
 
   using cut = ana::selection::cut;
   using weight = ana::selection::weight;
-  auto cut2l = data.filter<cut>("2l", [](int n_lep){return (n_lep == 2);})(n_lep)\
-                 .filter<weight>("mc_weight")(mc_weight)\
-                 .filter<weight>("el_sf")(el_sf)\
-                 .filter<weight>("mu_sf")(mu_sf);
+  auto cut2l = data.filter<weight>("mc_weight")(mc_weight)\
+                   .filter<weight>("el_sf")(el_sf)\
+                   .filter<weight>("mu_sf")(mu_sf)\
+                   .filter<cut>("2l", [](int n_lep){return (n_lep==2);})(n_lep);
 
   auto cut2los = cut2l.channel<ana::selection::cut>("2los", [](const ROOT::RVec<float>& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
   auto cut2ldf = cut2los.filter<ana::selection::cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return lep_type.at(0)+lep_type.at(1)==24;})(lep_type);
@@ -105,12 +107,10 @@ int main(int argc, char* argv[]) {
   auto pth_hist_bkr = data.book<Histogram<1,float>>(std::string("pth"), 100,0,400).fill(pth);
   auto pth_hists = data.book<Histogram<1,float>>(std::string("pth"), 100,0,400).fill(pth).at(cut2lsf, cut2ldf);
 
-  // std::cout << pth_hists.has_variation("lep_p4_up") << std::endl;
-
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
   // data analysis is not executed until results are accessed
-  // auto pth_2lsf_nom = pth_hists.nominal()["2los/2lsf"].result();
+  // auto pth_2ldf_nom = pth_hists.nominal()["2los/2lsf"].result();
   // auto pth_2lsf_nom = pth_hists.nominal()["2los/2lsf"].result();
 
   auto pth_2ldf_nom = pth_hists.nominal()["2los/2ldf"].result();
@@ -119,13 +119,11 @@ int main(int argc, char* argv[]) {
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
 
-  pth_2ldf_nom->Draw();
-  pth_2ldf_lep_p4_up->Draw("same hist");
-  gPad->Print("pth.pdf");
+  // gPad->Print("pth_channeled.pdf");
 
-  // auto outputFile = TFile::Open("hww_results.root","recreate");
-  // ana::output::dump<Folder>(pth,*outputFile);
-  // delete outputFile;
+  pth_2ldf_nom->SetLineColor(kBlack); pth_2ldf_nom->Draw("hist");
+  pth_2ldf_lep_p4_up->SetLineColor(kRed); pth_2ldf_lep_p4_up->Draw("E same");
+  gPad->Print("pth_varied.pdf");
 
   return 0;
 }
