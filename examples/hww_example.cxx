@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 
   auto data = ana::analysis<TreeData>();
 
-  data.open("mini", std::vector<std::string>{"hww.root"});
+  data.open( "mini", std::vector<std::string>{"hww_example.root"} );
 
   auto mcEventWeight = data.read<float>("mcWeight");
   auto puScaleFactor = data.read<float>("scaleFactor_PILEUP");
@@ -63,8 +63,6 @@ int main(int argc, char* argv[]) {
   auto jvfScaleFactor = data.read<float>("scaleFactor_JVFSF");
   auto zvtxScaleFactor = data.read<float>("scaleFactor_ZVERTEX");
 
-  data.filter<ana::selection::weight>("mcEventWeight", mcEventWeight);
-
   auto nlep = data.read<unsigned int>("lep_n");
   // auto lepPts = data.read<ROOT::RVec<float>>("lep_pt");
   // auto lepEtas = data.read<ROOT::RVec<float>>("lep_eta");
@@ -74,6 +72,9 @@ int main(int argc, char* argv[]) {
   // auto lepTypes = data.read<ROOT::RVec<unsigned int>>("lep_type");
   // auto met = data.read<float>("met_et");
   // auto metPhi = data.read<float>("met_phi");
+
+  auto inclusive = data.filter<ana::selection::weight>("mcEventWeight")(mcEventWeight);
+  auto cut2l = inclusive.filter<ana::selection::cut>("2l", [](const int& nlep){return (nlep == 2);})(nlep);
 
   // auto leadLepP4 = data.define<NthFourMomentum>(0);
   // leadLepP4.evaluate(lepPts, lepEtas, lepPhis, lepEs);
@@ -91,15 +92,14 @@ int main(int argc, char* argv[]) {
   //   dilepP4, met, metPhi
   // );
 
-  auto cut2l = data.filter<ana::selection::cut>("2l", [](const int& nlep){return (nlep == 2);}, nlep);
   // auto cut2los = cut2l.filter<ana::selection::cut>("2los", [](const ROOT::RVec<float>& lep_charge){return (lep_charge.at(0) + lep_charge.at(1) == 0);}, lepCharges);
   // auto cut2ldf = cut2los.filter<ana::selection::cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return (lep_type.at(0) + lep_type.at(1) == 24);}, lepTypes);
   // auto cut2lsf = cut2los.filter<ana::selection::cut>("2lsf", [](const ROOT::RVec<int>& lep_type){return ((lep_type.at(0) + lep_type.at(1) == 22) || (lep_type.at(0) + lep_type.at(1) == 26));}, lepTypes);
 
-  auto higgsPtSpectrum = data.count<Histogram<1,float>>(std::string("higgsPtSpectrum"), 100,0,2e5);
-  higgsPtSpectrum.fill(higgsPt);
+  auto higgsPtSpectrum = data.book<Histogram<1,float>>(std::string("higgsPtSpectrum"), 100,0,2e5);
+  // higgsPtSpectrum.fill(higgsPt);
   // higgsPtSpectrum.book(cut2los, cut2ldf, cut2lsf);
-  higgsPtSpectrum.book(cut2l);
+  // higgsPtSpectrum.book(cut2l);
 
   // data analysis is not executed until results are accessed
   // auto higgsPtSpectrum_2ldf = higgsPtSpectrum["2los/2ldf"].result();
@@ -109,13 +109,13 @@ int main(int argc, char* argv[]) {
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
 
-  higgsPtSpectrum_2ldf->Draw();
-  higgsPtSpectrum_2lsf->Draw("same");
-  gPad->Print("higgsPt.pdf");
+  // higgsPtSpectrum_2ldf->Draw();
+  // higgsPtSpectrum_2lsf->Draw("same");
+  // gPad->Print("higgsPt.pdf");
 
-  auto outputFile = TFile::Open("hww_results.root","recreate");
-  ana::output::dump<Folder>(higgsPtSpectrum,*outputFile);
-  delete outputFile;
+  // auto outputFile = TFile::Open("hww_results.root","recreate");
+  // ana::output::dump<Folder>(higgsPtSpectrum,*outputFile);
+  // delete outputFile;
 
   return 0;
 }

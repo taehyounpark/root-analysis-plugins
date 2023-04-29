@@ -47,14 +47,14 @@ install(
   DESTINATION lib
 )
 
-# file(COPY_FILE benchmarks/hww.root ${PROJECT_BINARY_DIR}/hww.root ONLY_IF_DIFFERENT)
-# add_executable(hww benchmarks/hww.cxx)
-# target_compile_features(hww PRIVATE cxx_std_17)
-# target_include_directories(
-#   hww
-#   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS}
-# )
-# target_link_libraries(hww RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
+file(COPY_FILE examples/hww_dataset.root ${PROJECT_BINARY_DIR}/hww_dataset.root ONLY_IF_DIFFERENT)
+add_executable(hww_example examples/hww_example.cxx)
+target_compile_features(hww_example PRIVATE cxx_std_17)
+target_include_directories(
+  hww_example
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS}
+)
+target_link_libraries(hww_example RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
 
 file(COPY_FILE benchmarks/mumu.csv ${PROJECT_BINARY_DIR}/mumu.csv ONLY_IF_DIFFERENT)
 add_executable(mumu benchmarks/mumu.cxx)
