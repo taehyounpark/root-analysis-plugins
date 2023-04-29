@@ -57,7 +57,7 @@
 #pragma link C++ class ana::multithread+;
 #pragma link C++ class ana::concurrent<ana::term<float>>+;
 
-#pragma link C++ class Tree;
+#pragma link C++ class TreeData;
 #pragma link C++ class CsvData;
 
 #pragma link C++ class Histogram<1,float>+;
