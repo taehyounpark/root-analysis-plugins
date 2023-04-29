@@ -20,101 +20,111 @@
 #include "RAnalysis/Histogram.h"
 #include "RAnalysis/Folder.h"
 
-class NthFourMomentum : public ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
+class ScaledP4 : public ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
 {
-public:
-  NthFourMomentum(unsigned int index=0) : 
-    ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>(),
-    m_index(index)
-  {}
-  virtual ~NthFourMomentum() = default;
 
-  virtual TLorentzVector evaluate(ana::observable<ROOT::RVec<double>> pts, ana::observable<ROOT::RVec<double>> etas, ana::observable<ROOT::RVec<double>> phis, ana::observable<ROOT::RVec<double>> es) const override {
+public:
+
+  ScaledP4(unsigned int index, double scale=1.0) : 
+    ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>(),
+    m_index(index),
+    m_scale(scale)
+  {}
+
+  virtual ~ScaledP4() = default;
+
+  virtual TLorentzVector evaluate(ana::observable<ROOT::RVec<double>> pt, ana::observable<ROOT::RVec<double>> eta, ana::observable<ROOT::RVec<double>> phi, ana::observable<ROOT::RVec<double>> es) const override {
     TLorentzVector p4;
-    p4.SetPtEtaPhiE(pts->at(m_index),etas->at(m_index),phis->at(m_index),es->at(m_index));
+    p4.SetPtEtaPhiE(pt->at(m_index)*m_scale,eta->at(m_index),phi->at(m_index),es->at(m_index)*m_scale);
     return p4;
   }
 
 protected:
+
   unsigned int m_index;
+  double m_scale;
+
 };
  
 int main(int argc, char* argv[]) {
 
+  // ana::analysis<Tree> data;
+  ana::multithread::disable();
+  auto data = ana::analysis<TreeData>();
+  data.open( "mini", {"hww_mc.root"} );
+
+  auto mc_weight = data.read<float>("mcWeight");
+  auto el_sf = data.read<float>("scaleFactor_ELE");
+  auto mu_sf = data.read<float>("scaleFactor_MUON");
+
+  auto n_lep = data.read<unsigned int>("lep_n");
+  auto lep_pt_MeV = data.read<ROOT::RVec<float>>("lep_pt").vary("lep_ptcone30", "lep_ptcone30");
+  auto lep_eta = data.read<ROOT::RVec<float>>("lep_eta");
+  auto lep_phi = data.read<ROOT::RVec<float>>("lep_phi");
+  auto lep_E_MeV = data.read<ROOT::RVec<float>>("lep_E");
+  auto lep_Q = data.read<ROOT::RVec<float>>("lep_charge");
+  auto lep_type = data.read<ROOT::RVec<unsigned int>>("lep_type");
+  auto met_MeV = data.read<float>("met_et");
+  auto met_phi = data.read<float>("met_phi");
+
+  auto GeV = data.constant<double>(1000.0);
+  auto lep_pt = lep_pt_MeV / GeV;
+  auto lep_E = lep_E_MeV / GeV;
+  auto met = met_MeV / GeV;
+
+  auto l1p4 = data.define<ScaledP4>(0)\
+                  .vary("lep_p4_up",0,1.1)\
+                  .vary("lep_p4_dn",0,0.9)\
+                  (lep_pt, lep_eta, lep_phi, lep_E);
+
+  auto l2p4 = data.define<ScaledP4>(1)\
+                  .vary("lep_p4_up",1,1.02)\
+                  .vary("lep_p4_dn",1,0.98)\
+                  (lep_pt, lep_eta, lep_phi, lep_E);
+
+  auto llp4 = data.define([](const TLorentzVector& p4, const TLorentzVector& q4){return (p4+q4);})(l1p4,l2p4);
+  auto pth = data.define(
+    [](const TLorentzVector& dilep_p4, float met, float met_phi) {
+      TVector2 ptll; ptll.SetMagPhi(dilep_p4.Pt(), dilep_p4.Phi());
+      TVector2 met2d; met2d.SetMagPhi(met, met_phi);
+      return (ptll+met2d).Mod();
+    })(llp4, met, met_phi);
+  std::cout << pth.list_variation_names().size() << std::endl;
+
+  using cut = ana::selection::cut;
+  using weight = ana::selection::weight;
+  auto cut2l = data.filter<cut>("2l", [](int n_lep){return (n_lep == 2);})(n_lep)\
+                 .filter<weight>("mc_weight")(mc_weight)\
+                 .filter<weight>("el_sf")(el_sf)\
+                 .filter<weight>("mu_sf")(mu_sf);
+
+  auto cut2los = cut2l.channel<ana::selection::cut>("2los", [](const ROOT::RVec<float>& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
+  auto cut2ldf = cut2los.filter<ana::selection::cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return lep_type.at(0)+lep_type.at(1)==24;})(lep_type);
+  auto cut2lsf = cut2los.filter<ana::selection::cut>("2lsf", [](const ROOT::RVec<int>& lep_type){return (lep_type.at(0)+lep_type.at(1)==22)||(lep_type.at(0)+lep_type.at(1)==26);})(lep_type);
+
+  auto pth_hist_bkr = data.book<Histogram<1,float>>(std::string("pth"), 100,0,400).fill(pth);
+  auto pth_hists = data.book<Histogram<1,float>>(std::string("pth"), 100,0,400).fill(pth).at(cut2lsf, cut2ldf);
+
+  // std::cout << pth_hists.has_variation("lep_p4_up") << std::endl;
+
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-  unsigned int nthreads;
-  std::stringstream strthreads;
-  if (argc) { strthreads << argv[1]; strthreads >> nthreads; };
-  nthreads ? ana::multithread::enable(nthreads) : ana::multithread::disable();
-
-  // ana::analysis<Tree> data;
-
-  auto data = ana::analysis<TreeData>();
-
-  data.open( "mini", std::vector<std::string>{"hww_example.root"} );
-
-  auto mcEventWeight = data.read<float>("mcWeight");
-  auto puScaleFactor = data.read<float>("scaleFactor_PILEUP");
-  auto btagScaleFactor = data.read<float>("scaleFactor_BTAG");
-  auto elScaleFactor = data.read<float>("scaleFactor_ELE");
-  auto muScaleFactor = data.read<float>("scaleFactor_MUON");
-  auto trigScaleFactor = data.read<float>("scaleFactor_TRIGGER");
-  auto jvfScaleFactor = data.read<float>("scaleFactor_JVFSF");
-  auto zvtxScaleFactor = data.read<float>("scaleFactor_ZVERTEX");
-
-  auto nlep = data.read<unsigned int>("lep_n");
-  // auto lepPts = data.read<ROOT::RVec<float>>("lep_pt");
-  // auto lepEtas = data.read<ROOT::RVec<float>>("lep_eta");
-  // auto lepPhis = data.read<ROOT::RVec<float>>("lep_phi");
-  // auto lepEs = data.read<ROOT::RVec<float>>("lep_E");
-  // auto lepCharges = data.read<ROOT::RVec<float>>("lep_charge");
-  // auto lepTypes = data.read<ROOT::RVec<unsigned int>>("lep_type");
-  // auto met = data.read<float>("met_et");
-  // auto metPhi = data.read<float>("met_phi");
-
-  auto inclusive = data.filter<ana::selection::weight>("mcEventWeight")(mcEventWeight);
-  auto cut2l = inclusive.filter<ana::selection::cut>("2l", [](const int& nlep){return (nlep == 2);})(nlep);
-
-  // auto leadLepP4 = data.define<NthFourMomentum>(0);
-  // leadLepP4.evaluate(lepPts, lepEtas, lepPhis, lepEs);
-
-  // auto subleadLepP4 = data.define<NthFourMomentum>(1);
-  // subleadLepP4.evaluate(lepPts, lepEtas, lepPhis, lepEs);
-
-  // auto dilepP4 = data.evaluate([](const TLorentzVector& p4, const TLorentzVector& q4){return (p4+q4);}, leadLepP4,subleadLepP4 );
-  // auto higgsPt = data.evaluate(
-  //   [](const TLorentzVector& dilep_p4, float met, float met_phi) {
-  //     TVector2 ptll; ptll.SetMagPhi(dilep_p4.Pt(), dilep_p4.Phi());
-  //     TVector2 met2d; met2d.SetMagPhi(met, met_phi);
-  //     return (ptll+met2d).Mod();
-  //   },
-  //   dilepP4, met, metPhi
-  // );
-
-  // auto cut2los = cut2l.filter<ana::selection::cut>("2los", [](const ROOT::RVec<float>& lep_charge){return (lep_charge.at(0) + lep_charge.at(1) == 0);}, lepCharges);
-  // auto cut2ldf = cut2los.filter<ana::selection::cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return (lep_type.at(0) + lep_type.at(1) == 24);}, lepTypes);
-  // auto cut2lsf = cut2los.filter<ana::selection::cut>("2lsf", [](const ROOT::RVec<int>& lep_type){return ((lep_type.at(0) + lep_type.at(1) == 22) || (lep_type.at(0) + lep_type.at(1) == 26));}, lepTypes);
-
-  auto higgsPtSpectrum = data.book<Histogram<1,float>>(std::string("higgsPtSpectrum"), 100,0,2e5);
-  // higgsPtSpectrum.fill(higgsPt);
-  // higgsPtSpectrum.book(cut2los, cut2ldf, cut2lsf);
-  // higgsPtSpectrum.book(cut2l);
-
   // data analysis is not executed until results are accessed
-  // auto higgsPtSpectrum_2ldf = higgsPtSpectrum["2los/2ldf"].result();
-  // all other results are already obtained instantaneously
-  // auto higgsPtSpectrum_2lsf = higgsPtSpectrum["2los/2lsf"].result();
+  // auto pth_2lsf_nom = pth_hists.nominal()["2los/2lsf"].result();
+  // auto pth_2lsf_nom = pth_hists.nominal()["2los/2lsf"].result();
+
+  auto pth_2ldf_nom = pth_hists.nominal()["2los/2ldf"].result();
+  auto pth_2ldf_lep_p4_up = pth_hists["lep_p4_up"]["2los/2ldf"].result();
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
 
-  // higgsPtSpectrum_2ldf->Draw();
-  // higgsPtSpectrum_2lsf->Draw("same");
-  // gPad->Print("higgsPt.pdf");
+  pth_2ldf_nom->Draw();
+  pth_2ldf_lep_p4_up->Draw("same hist");
+  gPad->Print("pth.pdf");
 
   // auto outputFile = TFile::Open("hww_results.root","recreate");
-  // ana::output::dump<Folder>(higgsPtSpectrum,*outputFile);
+  // ana::output::dump<Folder>(pth,*outputFile);
   // delete outputFile;
 
   return 0;

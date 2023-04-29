@@ -9,7 +9,7 @@
 #include "ana/vecutils.h"
 #include "ana/sample.h"
 
-TreeData::TreeData(const std::string& treeName, std::initializer_list<const char*> allFiles) :
+TreeData::TreeData(const std::string& treeName, std::initializer_list<std::string> allFiles) :
 	m_treeName(treeName),
 	m_allFiles(std::vector<std::string>(allFiles.begin(), allFiles.end()))
 {

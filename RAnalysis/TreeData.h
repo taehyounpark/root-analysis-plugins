@@ -28,7 +28,7 @@ public:
 	class Branch;
 
 public:
-	TreeData(const std::string& treeName, std::initializer_list<const char*> allFiles);
+	TreeData(const std::string& treeName, std::initializer_list<std::string> allFiles);
 	TreeData(const std::string& treeName, const std::vector<std::string>& allFiles);
 	~TreeData() = default;
 

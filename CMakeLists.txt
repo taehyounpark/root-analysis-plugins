@@ -47,7 +47,7 @@ install(
   DESTINATION lib
 )
 
-file(COPY_FILE examples/hww_dataset.root ${PROJECT_BINARY_DIR}/hww_dataset.root ONLY_IF_DIFFERENT)
+file(COPY_FILE examples/hww_mc.root ${PROJECT_BINARY_DIR}/hww_mc.root ONLY_IF_DIFFERENT)
 add_executable(hww_example examples/hww_example.cxx)
 target_compile_features(hww_example PRIVATE cxx_std_17)
 target_include_directories(
