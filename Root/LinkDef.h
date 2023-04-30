@@ -3,7 +3,6 @@
 #include "ana/concurrent.h"
 
 #include "ana/column.h"
-#include "ana/term.h"
 #include "ana/constant.h"
 #include "ana/definition.h"
 #include "ana/equation.h"
