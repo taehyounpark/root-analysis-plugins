@@ -57,15 +57,15 @@
 #pragma link C++ class Histogram<1,float>+;
 #pragma link C++ class Histogram<2,float>+;
 #pragma link C++ class Histogram<3,float>+;
-// #pragma link C++ class Histogram<1,ROOT::RVec<float>>+;
-// #pragma link C++ class Histogram<2,ROOT::RVec<float>>+;
-// #pragma link C++ class Histogram<3,ROOT::RVec<float>>+;
+#pragma link C++ class Histogram<1,ROOT::RVec<float>>+;
+#pragma link C++ class Histogram<2,ROOT::RVec<float>>+;
+#pragma link C++ class Histogram<3,ROOT::RVec<float>>+;
 
-// #pragma link C++ class TreeData+;
-// #pragma link C++ class CsvData+;
+#pragma link C++ class TreeData+;
+#pragma link C++ class CsvData+;
 
-// #pragma link C++ class ana::analysis<CsvData>+;
-// #pragma link C++ class ana::sample<TreeData>+;
+#pragma link C++ class ana::analysis<TreeData>+;
+#pragma link C++ class ana::sample<TreeData>+;
 
 #pragma link C++ class ana::output+;
 #pragma link C++ class Folder+;

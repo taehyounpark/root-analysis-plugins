@@ -8,7 +8,6 @@
 atlas_subdir( RAnalysis )
 
 find_package( ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad ROOTVecOps Tree TreePlayer Rint Postscript Matrix Physics MathCore Thread MultiProc ROOTDataFrame )
-find_package( Eigen )
 
 atlas_add_root_dictionary( 
   RAnalysis RADictInput
@@ -18,13 +17,9 @@ atlas_add_root_dictionary(
 
 atlas_add_library( 
   RAnalysis RAnalysis/*.h Root/*.cxx ${RADictInput}
-
   PUBLIC_HEADERS RAnalysis
-
   PRIVATE_INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-
   PRIVATE_LINK_LIBRARIES ${ROOT_LIBRARIES}
-
   LINK_LIBRARIES
   ana
   xAODBase
@@ -39,6 +34,15 @@ atlas_add_library(
   xAODTruth
   AsgTools 
 )
+
+# for some reason, template instantations fail for analysis<TreeData>
+# but are accessible from ROOT interpreter session through the linked dictionary
+# maybe it's a G++ problem
+# atlas_add_executable( 
+#   hww_example examples/hww_example.cxx 
+#   INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
+#   LINK_LIBRARIES ana RAnalysis
+# )
 
 #atlas_install_data( share/* )
 #atlas_install_python_modules( python/*.py )
