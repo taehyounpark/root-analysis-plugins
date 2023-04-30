@@ -1,43 +1,70 @@
 #pragma once
 
+#include <memory>
+#include <unordered_map>
+
+#include "ana/counter.h"
+
 #include "TObject.h"
 #include "TDirectory.h"
 #include "TFile.h"
-
-#include "ana/counter.h"
 
 class Folder : public ana::counter::summary<Folder>
 {
 
 public:
-  static TDirectory* getDirectory(TDirectory& dir, const std::string& path)
+  static TDirectory* subDirectory(TDirectory& dir, const std::string& path)
   {
-    dir.mkdir(path.c_str(), path.c_str(), true);
-    return dir.GetDirectory(path.c_str());
+    // check if directory exists
+    auto subDir = dir.GetDirectory(path.c_str());
+    // if it doesn't, make one
+    if (!subDir) {
+      dir.mkdir(path.c_str(), path.c_str(), true);
+      subDir = dir.GetDirectory(path.c_str());
+    }
+    // return either the existing or newly-created subdirectory
+    return subDir;
   }
 
 public:
-  Folder(const std::string& basePath="") : m_basePath(basePath) {}
+  Folder(const std::string& basePath) : m_basePath(basePath) {}
   ~Folder() = default;
+
+  void record(const std::string& variationName, const std::string& selectionPath, std::shared_ptr<TObject> counterResult)
+  {
+    if (m_variedResults.find(variationName)==m_variedResults.end()) {
+      m_variedResults.emplace(std::make_pair(variationName,std::unordered_map<std::string,std::shared_ptr<TObject>>({std::make_pair(selectionPath,counterResult)})));
+    } else {
+      m_variedResults[variationName].emplace(std::make_pair(selectionPath,counterResult));
+    }
+  }
 
   void record(const std::string& selectionPath, std::shared_ptr<TObject> counterResult)
   {
-    m_resultAtPath.emplace(std::make_pair(selectionPath,counterResult));
+    m_nominalResults.emplace(std::make_pair(selectionPath,counterResult));
   }
 
-  void report(TFile& outputFile)
+  void output(TFile& outputFile)
   {
-    auto baseFolder = m_basePath.empty() ? &outputFile : this->getDirectory(outputFile, m_basePath);
-    for (const auto& pathAndResult : m_resultAtPath) {
-      auto selectionPath = pathAndResult.first;
-      auto counterResult = pathAndResult.second;
-      auto selectionFolder = this->getDirectory(*baseFolder, selectionPath);
-      selectionFolder->WriteObject(counterResult->Clone(), counterResult->GetName());
+    // nominal results
+    for (auto const& [selPath, nomRes] : m_nominalResults) {
+      auto nomFolder = this->subDirectory(outputFile, m_basePath);
+      auto selFolder = this->subDirectory(*nomFolder, selPath);
+      selFolder->WriteObject(nomRes->Clone(), nomRes->GetName());
+    }
+    // varied results
+    for (auto const& [varName, varMap] : m_variedResults) {
+      auto varFolder = this->subDirectory(outputFile, m_basePath+"_"+varName);
+      for (auto const& [selPath, varRes] : m_variedResults.at(varName)) {
+        auto selFolder = this->subDirectory(*varFolder, selPath);
+        selFolder->WriteObject(varRes->Clone(), varRes->GetName());
+      }
     }
   }
 
 public:
   std::string m_basePath;
-  std::map<std::string, std::shared_ptr<TObject>> m_resultAtPath;
+  std::unordered_map<std::string, std::shared_ptr<TObject>> m_nominalResults;
+  std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<TObject>>> m_variedResults;
   
 };

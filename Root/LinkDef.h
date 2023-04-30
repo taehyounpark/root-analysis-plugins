@@ -1,4 +1,3 @@
-#include "ana/routine.h"
 #include "ana/action.h"
 #include "ana/concurrent.h"
 
@@ -37,8 +36,6 @@
 #pragma link off all globals;
 
 #pragma link C++ class ana::multithread+;
-
-#pragma link C++ class ana::routine+;
 #pragma link C++ class ana::action+;
 
 #pragma link C++ class ana::term<float>+;
