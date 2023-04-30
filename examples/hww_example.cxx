@@ -65,12 +65,9 @@ int main(int argc, char* argv[]) {
   auto met_phi = data.read<float>("met_phi");
 
   auto GeV = data.constant<double>(1000.0);
-  // auto lep_pt = lep_pt_MeV / GeV;
-  // auto lep_E = lep_E_MeV / GeV;
-  // auto met = met_MeV / GeV;
-  auto lep_pt = data.define([](ROOT::RVec<float> const& pt){return pt / 1000.0;})(lep_pt_MeV);
-  auto lep_E = data.define([](ROOT::RVec<float> const& E){return E / 1000.0;})(lep_E_MeV);
-  auto met = data.define([](float E){return E / 1000.0;})(met_MeV);
+  auto lep_pt = lep_pt_MeV / GeV;  // RVec<float> / double
+  auto lep_E = lep_E_MeV / GeV;
+  auto met = met_MeV / GeV;
 
   auto l1p4 = data.define<ScaledP4>(0)\
                   .vary("lep_p4_up",0,1.1)\
@@ -92,9 +89,7 @@ int main(int argc, char* argv[]) {
 
   using cut = ana::selection::cut;
   using weight = ana::selection::weight;
-  auto cut2l = data.filter<weight>("mc_weight")(mc_weight)\
-                   .filter<weight>("el_sf")(el_sf)\
-                   .filter<weight>("mu_sf")(mu_sf)\
+  auto cut2l = data.filter<weight>("weight")(mc_weight * el_sf * mu_sf)\
                    .filter<cut>("2l", [](int n_lep){return (n_lep==2);})(n_lep);
 
   auto cut2los = cut2l.channel<ana::selection::cut>("2los", [](const ROOT::RVec<float>& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
