@@ -14,7 +14,7 @@
 #include "ana/definition.h"
 #include "ana/output.h"
 
-#include "RAnalysis/TreeData.h"
+#include "RAnalysis/Tree.h"
 #include "RAnalysis/Histogram.h"
 #include "RAnalysis/Folder.h"
 
@@ -51,7 +51,7 @@ protected:
 int main(int argc, char* argv[]) {
 
   ana::multithread::disable();
-  ana::analysis<TreeData> hww;
+  ana::analysis<Tree> hww;
   hww.open( "mini", {"hww_mc.root"} );
 
   auto mc_weight = hww.read<float>("mcWeight");

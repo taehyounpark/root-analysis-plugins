@@ -24,8 +24,8 @@
 #include "ana/strutils.h"
 #include "ana/vecutils.h"
 
-#include "RAnalysis/TreeData.h"
-#include "RAnalysis/CsvData.h"
+#include "RAnalysis/Tree.h"
+#include "RAnalysis/RDS.h"
 
 #include "RAnalysis/Histogram.h"
 
@@ -58,11 +58,11 @@
 #pragma link C++ class Histogram<2,ROOT::RVec<float>>+;
 #pragma link C++ class Histogram<3,ROOT::RVec<float>>+;
 
-#pragma link C++ class TreeData+;
+#pragma link C++ class Tree+;
 #pragma link C++ class CsvData+;
 
-#pragma link C++ class ana::analysis<TreeData>+;
-#pragma link C++ class ana::sample<TreeData>+;
+#pragma link C++ class ana::analysis<Tree>+;
+#pragma link C++ class ana::sample<Tree>+;
 
 #pragma link C++ class ana::output+;
 #pragma link C++ class Folder+;

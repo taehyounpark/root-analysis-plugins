@@ -35,7 +35,7 @@ atlas_add_library(
   AsgTools 
 )
 
-# for some reason, template instantations fail for analysis<TreeData>
+# for some reason, template instantations fail for analysis<Tree>
 # but are accessible from ROOT interpreter session through the linked dictionary
 # maybe it's a G++ problem
 # atlas_add_executable( 

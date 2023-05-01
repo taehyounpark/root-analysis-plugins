@@ -18,7 +18,7 @@
 #include "ana/input.h"
 #include "ana/reader.h"
 
-class TreeData : public ana::input::dataset<TreeData>
+class Tree : public ana::input::dataset<Tree>
 {
 
 public:
@@ -28,9 +28,9 @@ public:
 	class Branch;
 
 public:
-	TreeData(const std::string& treeName, std::initializer_list<std::string> allFiles);
-	TreeData(const std::string& treeName, const std::vector<std::string>& allFiles);
-	~TreeData() = default;
+	Tree(const std::string& treeName, std::initializer_list<std::string> allFiles);
+	Tree(const std::string& treeName, const std::vector<std::string>& allFiles);
+	~Tree() = default;
 
 	ana::input::partition allocate();
 	std::shared_ptr<Reader> open(const ana::input::range& part) const;
@@ -42,7 +42,7 @@ protected:
 
 };
 
-class TreeData::Reader : public ana::input::reader<Reader>
+class Tree::Reader : public ana::input::reader<Reader>
 {
 public:
 	Reader(const ana::input::range& part, std::unique_ptr<TTree> tree);
@@ -61,7 +61,7 @@ protected:
 };
 
 template <typename T>
-class TreeData::Branch : public ana::column::reader<T>
+class Tree::Branch : public ana::column::reader<T>
 {
 
 public:
@@ -90,7 +90,7 @@ protected:
 };
 
 template <typename T>
-class TreeData::Branch<ROOT::RVec<T>> : public ana::column::reader<ROOT::RVec<T>>
+class Tree::Branch<ROOT::RVec<T>> : public ana::column::reader<ROOT::RVec<T>>
 {
 
 public:
@@ -127,7 +127,7 @@ protected:
 };
 
 template <>
-class TreeData::Branch<ROOT::RVec<bool>> : public ana::column::reader<ROOT::RVec<bool>>
+class Tree::Branch<ROOT::RVec<bool>> : public ana::column::reader<ROOT::RVec<bool>>
 {
 
 public:
@@ -165,7 +165,7 @@ protected:
 
 
 template <typename U>
-std::shared_ptr<TreeData::Branch<U>> TreeData::Reader::read(const std::string& branchName) const
+std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const std::string& branchName) const
 {
 	return std::make_shared<Branch<U>>(branchName,*m_treeReader);
 }

@@ -1,4 +1,4 @@
-#include "RAnalysis/TreeData.h"
+#include "RAnalysis/Tree.h"
 
 #include "TROOT.h"
 #include "TTreeReader.h"
@@ -9,7 +9,7 @@
 #include "ana/vecutils.h"
 #include "ana/sample.h"
 
-TreeData::TreeData(const std::string& treeName, std::initializer_list<std::string> allFiles) :
+Tree::Tree(const std::string& treeName, std::initializer_list<std::string> allFiles) :
 	m_treeName(treeName),
 	m_allFiles(std::vector<std::string>(allFiles.begin(), allFiles.end()))
 {
@@ -17,7 +17,7 @@ TreeData::TreeData(const std::string& treeName, std::initializer_list<std::strin
 	ROOT::EnableImplicitMT();
 }
 
-TreeData::TreeData(const std::string& treeName, const std::vector<std::string>& allFiles) :
+Tree::Tree(const std::string& treeName, const std::vector<std::string>& allFiles) :
 	m_treeName(treeName),
 	m_allFiles(allFiles)
 {
@@ -25,7 +25,7 @@ TreeData::TreeData(const std::string& treeName, const std::vector<std::string>& 
 	ROOT::EnableImplicitMT();
 }
 
-ana::input::partition TreeData::allocate()
+ana::input::partition Tree::allocate()
 {
 	TDirectory::TContext c;
 	ana::input::partition parts;
@@ -66,7 +66,7 @@ ana::input::partition TreeData::allocate()
 	return parts;
 }
 
-std::shared_ptr<TreeData::Reader> TreeData::open(const ana::input::range& part) const
+std::shared_ptr<Tree::Reader> Tree::open(const ana::input::range& part) const
 {
 	auto tree = std::make_unique<TChain>(m_treeName.c_str(),m_treeName.c_str());
 	tree->ResetBit(kMustCleanup);
@@ -76,19 +76,19 @@ std::shared_ptr<TreeData::Reader> TreeData::open(const ana::input::range& part) 
 	return std::make_shared<Reader>(part,std::move(tree));
 }
 
-TreeData::Reader::Reader(const ana::input::range& part, std::unique_ptr<TTree> tree) :
+Tree::Reader::Reader(const ana::input::range& part, std::unique_ptr<TTree> tree) :
 	ana::input::reader<Reader>(part),
 	m_tree(std::move(tree))
 {
 	m_treeReader = std::make_unique<TTreeReader>(m_tree.get());
 }
 
-void TreeData::Reader::begin()
+void Tree::Reader::begin()
 {
 	m_treeReader->SetEntriesRange(m_part.begin,m_part.end);
 }
 
-bool TreeData::Reader::next()
+bool Tree::Reader::next()
 {
 	return m_treeReader->Next();
 }

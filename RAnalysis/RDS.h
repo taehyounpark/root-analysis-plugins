@@ -11,7 +11,7 @@
 #include "ana/input.h"
 #include "ana/reader.h"
 
-class RData : public ana::input::dataset<RData>
+class RDS : public ana::input::dataset<RDS>
 {
 
 private:
@@ -24,8 +24,8 @@ public:
 	class Column;
 
 public:
-	RData(std::unique_ptr<RDataSource> rds);
-	~RData() = default;
+	RDS(std::unique_ptr<RDataSource> rds);
+	~RDS() = default;
 
 	ana::input::partition allocate();
 	std::shared_ptr<Reader> open(const ana::input::range& part) const;
@@ -39,7 +39,7 @@ protected:
 };
 
 
-class RData::Reader : public ana::input::reader<Reader>
+class RDS::Reader : public ana::input::reader<Reader>
 {
 
 public:
@@ -61,7 +61,7 @@ protected:
 };
 
 template <typename T>
-class RData::Column : public ana::column::reader<T>
+class RDS::Column : public ana::column::reader<T>
 {
 
 public:
@@ -82,7 +82,7 @@ protected:
 };
 
 template <typename T>
-std::shared_ptr<RData::Column<T>> RData::Reader::read(const std::string& name) const
+std::shared_ptr<RDS::Column<T>> RDS::Reader::read(const std::string& name) const
 {
   auto columnReaders = m_rds->GetColumnReaders<T>(name.c_str());
 	return std::make_shared<Column<T>>(name,columnReaders[m_part.slot]);

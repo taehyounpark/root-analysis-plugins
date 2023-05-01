@@ -1,4 +1,4 @@
-#include "RAnalysis/CsvData.h"
+#include "RAnalysis/RDS.h"
 
 #include "TROOT.h"
 
@@ -6,15 +6,14 @@
 #include "ana/strutils.h"
 #include "ana/vecutils.h"
 
-CsvData::CsvData(const std::string& csvFile) :
-  // m_csv(ROOT::RDF::RCsvDS(csvFile.c_str())),
-  m_rds(std::make_unique<RCsvDS>(csvFile))
+RDS::RDS(std::unique_ptr<RDataSource> rds) :
+	m_rds(std::move(rds))
 {}
 
-ana::input::partition CsvData::allocate()
+ana::input::partition RDS::allocate()
 {
   // force multithreading
-  ROOT::EnableImplicitMT(ana::multithread::concurrency());
+  ROOT::EnableImplicitMT(ana::multithread::s_suggestion);
   // get ROOT thread size
   size_t imtps = ROOT::GetThreadPoolSize();
 
@@ -31,45 +30,41 @@ ana::input::partition CsvData::allocate()
   return partition;
 }
 
-void CsvData::start()
+void RDS::start()
 {
   m_rds->Initialise();
 }
 
-void CsvData::finish()
+void RDS::finish()
 {
   m_rds->Finalise();
 }
 
-std::shared_ptr<CsvData::Reader> CsvData::open(const ana::input::range& range) const
+std::shared_ptr<RDS::Reader> RDS::open(const ana::input::range& part) const
 {
-	return std::make_shared<Reader>(range, *m_rds);
+	return std::make_shared<Reader>(part, *m_rds);
 }
 
-CsvData::Reader::Reader(const ana::input::range& range, RCsvDS& rds) :
-	ana::input::reader<Reader>(range),
+RDS::Reader::Reader(const ana::input::range& part, RDataSource& rds) :
+  ana::input::reader<Reader>(part),
   m_rds(&rds)
-{
-  // std::cout << range.begin << range.end << std::endl;
-}
+{}
 
-void CsvData::Reader::begin()
+void RDS::Reader::begin()
 {
   m_rds->InitSlot(m_part.slot, m_part.begin);
 	m_current = m_part.begin;
 }
 
-bool CsvData::Reader::next()
+bool RDS::Reader::next()
 {
-  // std::cout << m_current <<std::endl;
-  // std::cout << m_part.end <<std::endl;
   if (m_current < m_part.end) {
     return m_rds->SetEntry(m_part.slot, m_current++);
   }
   return false;
 }
 
-void CsvData::Reader::end()
+void RDS::Reader::end()
 {
   m_rds->FinaliseSlot(m_part.slot);
 }
