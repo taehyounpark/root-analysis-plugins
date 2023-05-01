@@ -54,9 +54,8 @@ public:
 	virtual void end() override;
 
 protected:
-  ana::input::range m_part;
-  RDataSource*      m_rds;
-  long long         m_current;
+  RDataSource* m_rds;
+  long long    m_current;
 
 };
 

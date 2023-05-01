@@ -50,7 +50,7 @@ protected:
  
 int main(int argc, char* argv[]) {
 
-  ana::multithread::disable();
+  ana::multithread::enable(2);
   ana::analysis<Tree> hww;
   hww.open( "mini", {"hww_mc.root"} );
 
@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
   // auto l1n2pt_p4_up = l1n2pt_hists["lp4_up"]["2los/2ldf"].result();
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-  std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+  std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " [µs]" << std::endl;
 
   // gPad->Print("pth_channeled.pdf");
   // helper function to dump counter results at all selections

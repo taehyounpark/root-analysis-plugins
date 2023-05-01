@@ -1,8 +1,12 @@
 
 project(RAnalysis)
 
-file(GLOB RAnalysisHeaders ana/*.h*)
+file(GLOB RAnalysisHeaders RAnalysis/*.h)
 file(GLOB RAnalysisSources Root/*.cxx)
+list(FILTER RAnalysisHeaders EXCLUDE REGEX ".*RAnalysis/Event\.h$")
+list(FILTER RAnalysisSources EXCLUDE REGEX ".*Root/Event\.cxx$")
+
+message(${RAnalysisSources})
 
 add_library( RAnalysis SHARED ${RAnalysisSources} ${RAnalysisHeaders})
 
@@ -19,7 +23,7 @@ find_library(ROOT_RDATAFRAME_LIBRARY ROOTDataFrame HINTS ${ROOT_LIBRARY_DIR} REQ
 target_link_libraries(RAnalysis ana ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::ROOTDataFrame)
 
 ROOT_GENERATE_DICTIONARY(
-  RAnalysisDict RAnalysis/*.h
+  RAnalysisDict ${RAnalysisHeaders}
   LINKDEF Root/LinkDef.h
   MODULE RAnalysis
 )
@@ -46,11 +50,11 @@ target_compile_features(hww_example PRIVATE cxx_std_17)
 target_include_directories(hww_example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS})
 target_link_libraries(hww_example RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
 
-# file(COPY_FILE benchmarks/dimuon.csv ${PROJECT_BINARY_DIR}/dimuon.csv ONLY_IF_DIFFERENT)
-# add_executable(csv_benchmark benchmarks/csv_benchmark.cxx)
-# target_compile_features(csv_benchmark PRIVATE cxx_std_17)
-# target_include_directories(csv_benchmark PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS})
-# target_link_libraries(csv_benchmark RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
+file(COPY_FILE benchmarks/dimuon.csv ${PROJECT_BINARY_DIR}/dimuon.csv ONLY_IF_DIFFERENT)
+add_executable(csv_benchmark benchmarks/csv_benchmark.cxx)
+target_compile_features(csv_benchmark PRIVATE cxx_std_17)
+target_include_directories(csv_benchmark PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS})
+target_link_libraries(csv_benchmark RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
 
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
