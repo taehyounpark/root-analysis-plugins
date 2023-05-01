@@ -22,18 +22,18 @@ using RVecF = ROOT::RVec<float>;
 using RVecD = ROOT::RVec<double>;
 using TLV = TLorentzVector;
 
-class ScaledP4 : public ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
+class NthP4 : public ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
 {
 
 public:
 
-  ScaledP4(unsigned int index, double scale=1.0) : 
+  NthP4(unsigned int index, double scale=1.0) : 
     ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>(),
     m_index(index),
     m_scale(scale)
   {}
 
-  virtual ~ScaledP4() = default;
+  virtual ~NthP4() = default;
 
   virtual TLV evaluate(ana::observable<ROOT::RVec<double>> pt, ana::observable<ROOT::RVec<double>> eta, ana::observable<ROOT::RVec<double>> phi, ana::observable<ROOT::RVec<double>> es) const override {
     TLV p4;
@@ -58,8 +58,8 @@ int main(int argc, char* argv[]) {
   auto el_sf = hww.read<float>("scaleFactor_ELE");
   auto mu_sf = hww.read<float>("scaleFactor_MUON");
 
-  auto lep_pt_MeV = hww.read<RVecF>("lep_pt");
-  // auto lep_pt_MeV = hww.read<RVecF>("lep_pt").vary("lptcone30", "lep_ptcone30");
+  // auto lep_pt_MeV = hww.read<RVecF>("lep_pt");
+  auto lep_pt_MeV = hww.read<RVecF>("lep_pt").vary("lptcone30", "lep_ptcone30");
   auto lep_eta = hww.read<RVecF>("lep_eta");
   auto lep_phi = hww.read<RVecF>("lep_phi");
   auto lep_E_MeV = hww.read<RVecF>("lep_E");
@@ -74,22 +74,15 @@ int main(int argc, char* argv[]) {
   auto met = met_MeV / GeV;
 
   auto lep_eta_max = hww.constant<double>(2.4);
-  auto lep_pt_sel = lep_pt[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  // etc. for all other lep_X
+  auto Escale = hww.define([](RVecF E){return E*1.0;}).vary("lp4_up",[](RVecF E){return E*1.01;}).vary("lp4_dn",[](RVecF E){return E*0.99;});
+  auto lep_pt_sel = Escale(lep_pt)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
+  auto lep_E_sel = Escale(lep_E)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto lep_phi_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto lep_E_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
+  auto lep_phi_sel = lep_phi[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto n_lep_sel = hww.define([](RVecF const& lep){return lep.size();})(lep_pt_sel);
 
-  auto l1p4 = hww.define<ScaledP4>(0)\
-                  (lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
-                  // .vary("lp4_up",0,1.1)\
-                  // .vary("lp4_dn",0,0.9)\
-
-  auto l2p4 = hww.define<ScaledP4>(1)\
-                  (lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
-                  // .vary("lp4_dn",1,0.98)\
-                  // .vary("lp4_up",1,1.02)\
+  auto l1p4 = hww.define<NthP4>(0)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
+  auto l2p4 = hww.define<NthP4>(1)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
 
   auto llp4 = hww.define([](const TLV& p4, const TLV& q4){return (p4+q4);})(l1p4,l2p4);
   auto pth = hww.define(
@@ -102,20 +95,17 @@ int main(int argc, char* argv[]) {
   using cut = ana::selection::cut;
   using weight = ana::selection::weight;
   auto n_lep_req = hww.constant<int>(2);
-  auto cut2l = hww.filter<weight>("mc_weight")(mc_weight * el_sf * mu_sf)\
-                   .filter<cut>("2l")(n_lep_sel == n_lep_req);
-                    // reminder: delayed math operations
+  // auto n_lep_cut = n_lep_sel == n_lep_req;
+  auto cut2l = hww.filter<weight>("mc_weight").apply(mc_weight * el_sf * mu_sf)\
+                  .filter<cut>("2l")(n_lep_sel == n_lep_req);
 
-                                             // custom expressions also possible
   auto cut2los = cut2l.channel<cut>("2los",  [](const RVecF& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
   auto cut2ldf = cut2los.filter<cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return lep_type.at(0)+lep_type.at(1)==24;})(lep_type);
   auto cut2lsf = cut2los.filter<cut>("2lsf", [](const ROOT::RVec<int>& lep_type){return (lep_type.at(0)+lep_type.at(1)==22)||(lep_type.at(0)+lep_type.at(1)==26);})(lep_type);
 
-  auto pth_2los = hww.book<Histogram<1,float>>(std::string("pth"),50,0,400).fill(pth).at(cut2los);
-
+  auto pth_2los = hww.book<Histogram<1,float>>(std::string("pth"),50,-400,0).fill(-pth).at(cut2los);
   auto pth_hists = hww.book<Histogram<1,float>>("pth",50,0,400).fill(pth).at(cut2lsf,cut2ldf);
 
-  // bonus: "recycle" a definition for different input columns
   auto get_pt = hww.define([](TLV const& p4){return p4.Pt();});
   auto l1pt = get_pt(l1p4);
   auto l2pt = get_pt(l2p4);
@@ -123,26 +113,27 @@ int main(int argc, char* argv[]) {
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-  auto pth_2los_res = pth_2los.result();  // std::shared_ptr<TH1F>
-  auto pth_2lsf_res = pth_hists["2los/2lsf"].result();
-  auto pth_2ldf_res = pth_hists["2los/2ldf"].result();
+  // auto pth_2los_res = pth_2los.result();  // std::shared_ptr<TH1F>
+  // auto pth_2lsf_res = pth_hists["2los/2lsf"].result();
+  // auto pth_2ldf_res = pth_hists["2los/2ldf"].result();
 
-  // auto l1n2pt_nom = l1n2pt_hists.nominal()["2los/2ldf"].result();
-  // auto l1n2pt_p4_up = l1n2pt_hists["lp4_up"]["2los/2ldf"].result();
+  auto l1n2pt_nom = l1n2pt_hists.nominal()["2los/2ldf"].result();
+  auto l1n2pt_p4_up = l1n2pt_hists["lp4_up"]["2los/2ldf"].result();
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << " [µs]" << std::endl;
 
-  // gPad->Print("pth_channeled.pdf");
-  // helper function to dump counter results at all selections
+  // pth_2los.nominal().result()->Draw();
+  // gPad->Print("pth.pdf");
+
   auto out_file = TFile::Open("hww_results.root","recreate");
-  ana::output::dump<Folder>(pth_hists, *out_file, "hww");
-  ana::output::dump<Folder>(l1n2pt_hists, *out_file, "hww");
+  // ana::output::dump<Folder>(pth_hists, *out_file, "hww");
+  // ana::output::dump<Folder>(l1n2pt_hists, *out_file, "hww");
   delete out_file;
 
-  // l1n2pt_nom->SetLineColor(kBlack); l1n2pt_nom->Draw("hist");
-  // l1n2pt_p4_up->SetLineColor(kRed); l1n2pt_p4_up->Draw("E same");
-  // gPad->Print("l1n2pt_varied.pdf");
+  l1n2pt_nom->SetLineColor(kBlack); l1n2pt_nom->Draw("hist");
+  l1n2pt_p4_up->SetLineColor(kRed); l1n2pt_p4_up->Draw("E same");
+  gPad->Print("l1n2pt_varied.pdf");
 
   return 0;
 }
