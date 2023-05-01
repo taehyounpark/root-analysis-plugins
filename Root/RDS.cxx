@@ -13,20 +13,20 @@ RDS::RDS(std::unique_ptr<RDataSource> rds) :
 ana::input::partition RDS::allocate()
 {
   // force multithreading
-  ROOT::EnableImplicitMT(ana::multithread::s_suggestion);
-  // get ROOT thread size
-  size_t imtps = ROOT::GetThreadPoolSize();
+  if (ana::multithread::status()) {
+    ROOT::EnableImplicitMT(ana::multithread::concurrency());
+  }
+  m_rds->SetNSlots(ROOT::GetThreadPoolSize() ? ROOT::GetThreadPoolSize() : 1);
 
-  // get allocation
-  m_rds->SetNSlots(imtps);
+  // get allocated slots 
   auto slots = m_rds->GetEntryRanges();
   ana::input::partition partition;
   for (size_t islot=0 ; islot<slots.size() ; ++islot) {
     partition.add_part(islot, slots[islot].first, slots[islot].second);
   }
-  // allocation is determined by ROOT -- fix partition to indicate this
-  partition.fixed = true;
 
+  // use whatever ROOT has decided
+  partition.fixed = true;
   return partition;
 }
 
