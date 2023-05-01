@@ -54,8 +54,8 @@ int main(int argc, char* argv[]) {
   auto el_sf = hww.read<float>("scaleFactor_ELE");
   auto mu_sf = hww.read<float>("scaleFactor_MUON");
 
-  auto n_lep = hww.read<unsigned int>("lep_n");
-  auto lep_pt_MeV = hww.read<ROOT::RVec<float>>("lep_pt").vary("lptcone30", "lep_ptcone30");
+  auto lep_pt_MeV = hww.read<ROOT::RVec<float>>("lep_pt");
+  // auto lep_pt_MeV = hww.read<ROOT::RVec<float>>("lep_pt").vary("lptcone30", "lep_ptcone30");
   auto lep_eta = hww.read<ROOT::RVec<float>>("lep_eta");
   auto lep_phi = hww.read<ROOT::RVec<float>>("lep_phi");
   auto lep_E_MeV = hww.read<ROOT::RVec<float>>("lep_E");
@@ -69,17 +69,23 @@ int main(int argc, char* argv[]) {
   auto lep_E = lep_E_MeV / GeV;
   auto met = met_MeV / GeV;
 
-  auto eta_max = hww.constant<double>(2.4);
+  auto lep_eta_max = hww.constant<double>(2.4);
+  auto lep_pt_sel = lep_pt[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
+  // etc. for all other lep_X
+  auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
+  auto lep_phi_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
+  auto lep_E_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
+  auto n_lep_sel = hww.define([](ROOT::RVec<float> const& lep){return lep.size();})(lep_pt_sel);
 
   auto l1p4 = hww.define<ScaledP4>(0)\
-                  .vary("lp4_up",0,1.1)\
-                  .vary("lp4_dn",0,0.9)\
-                  (lep_pt, lep_eta, lep_phi, lep_E);
+                  (lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
+                  // .vary("lp4_up",0,1.1)\
+                  // .vary("lp4_dn",0,0.9)\
 
   auto l2p4 = hww.define<ScaledP4>(1)\
-                  .vary("lp4_up",1,1.02)\
-                  .vary("lp4_dn",1,0.98)\
-                  (lep_pt, lep_eta, lep_phi, lep_E);
+                  (lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
+                  // .vary("lp4_dn",1,0.98)\
+                  // .vary("lp4_up",1,1.02)\
 
   auto llp4 = hww.define([](const TLorentzVector& p4, const TLorentzVector& q4){return (p4+q4);})(l1p4,l2p4);
   auto pth = hww.define(
@@ -93,7 +99,7 @@ int main(int argc, char* argv[]) {
   using weight = ana::selection::weight;
   auto n_lep_req = hww.constant<int>(2);
   auto cut2l = hww.filter<weight>("mc_weight")(mc_weight * el_sf * mu_sf)\
-                   .filter<cut>("2l")(n_lep == n_lep_req);
+                   .filter<cut>("2l")(n_lep_sel == n_lep_req);
                     // reminder: delayed math operations
 
                                              // custom expressions also possible
@@ -105,20 +111,18 @@ int main(int argc, char* argv[]) {
 
   auto pth_hists = hww.book<Histogram<1,float>>(std::string("pth"),50,0,400).fill(pth).at(cut2lsf,cut2ldf);
 
-  auto get_pt = hww.define([](TLorentzVector const& p4){return p4.Pt();});
-  auto l1pt = get_pt(l1p4);
-  auto l2pt = get_pt(l2p4);
-  auto l1n2pt_vars = hww.book<Histogram<1,float>>(std::string("l1n2pt"),50,0,200).fill(l1pt).fill(l2pt).at(cut2lsf, cut2ldf);
+  auto l1pt = lep_pt_sel[ hww.constant(0) ]; 
+  auto l2pt = lep_pt_sel[ hww.constant(1) ]; 
+  auto l1n2pt_hists = hww.book<Histogram<1,float>>(std::string("l1n2pt"),50,0,200).fill(l1pt).fill(l2pt).at(cut2los, cut2lsf, cut2ldf);
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-  // auto pth_2los_res = pth_2los.result();  // std::shared_ptr<TH1F>
+  auto pth_2los_res = pth_2los.result();  // std::shared_ptr<TH1F>
+  auto pth_2lsf_res = pth_hists["2los/2lsf"].result();
+  auto pth_2ldf_res = pth_hists["2los/2ldf"].result();
 
-  // auto pth_2lsf_res = pth_hists["2los/2lsf"].result();
-  // auto pth_2ldf_res = pth_hists["2los/2ldf"].result();
-
-  auto l1n2pt_nom = l1n2pt_vars.nominal()["2los/2ldf"].result();
-  auto l1n2pt_p4_up = l1n2pt_vars["lp4_up"]["2los/2ldf"].result();
+  // auto l1n2pt_nom = l1n2pt_hists.nominal()["2los/2ldf"].result();
+  // auto l1n2pt_p4_up = l1n2pt_hists["lp4_up"]["2los/2ldf"].result();
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "Elapsed time = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
@@ -127,12 +131,12 @@ int main(int argc, char* argv[]) {
   // helper function to dump counter results at all selections
   auto out_file = TFile::Open("hww_results.root","recreate");
   ana::output::dump<Folder>(pth_hists, *out_file, "hww");
-  ana::output::dump<Folder>(l1n2pt_vars, *out_file, "hww");
+  ana::output::dump<Folder>(l1n2pt_hists, *out_file, "hww");
   delete out_file;
 
-  l1n2pt_nom->SetLineColor(kBlack); l1n2pt_nom->Draw("hist");
-  l1n2pt_p4_up->SetLineColor(kRed); l1n2pt_p4_up->Draw("E same");
-  gPad->Print("l1n2pt_varied.pdf");
+  // l1n2pt_nom->SetLineColor(kBlack); l1n2pt_nom->Draw("hist");
+  // l1n2pt_p4_up->SetLineColor(kRed); l1n2pt_p4_up->Draw("E same");
+  // gPad->Print("l1n2pt_varied.pdf");
 
   return 0;
 }
