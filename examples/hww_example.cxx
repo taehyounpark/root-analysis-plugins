@@ -18,21 +18,25 @@
 #include "RAnalysis/Histogram.h"
 #include "RAnalysis/Folder.h"
 
-class ScaledP4 : public ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
+using RVecF = ROOT::RVec<float>;
+using RVecD = ROOT::RVec<double>;
+using TLV = TLorentzVector;
+
+class ScaledP4 : public ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
 {
 
 public:
 
   ScaledP4(unsigned int index, double scale=1.0) : 
-    ana::column::definition<TLorentzVector(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>(),
+    ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>(),
     m_index(index),
     m_scale(scale)
   {}
 
   virtual ~ScaledP4() = default;
 
-  virtual TLorentzVector evaluate(ana::observable<ROOT::RVec<double>> pt, ana::observable<ROOT::RVec<double>> eta, ana::observable<ROOT::RVec<double>> phi, ana::observable<ROOT::RVec<double>> es) const override {
-    TLorentzVector p4;
+  virtual TLV evaluate(ana::observable<ROOT::RVec<double>> pt, ana::observable<ROOT::RVec<double>> eta, ana::observable<ROOT::RVec<double>> phi, ana::observable<ROOT::RVec<double>> es) const override {
+    TLV p4;
     p4.SetPtEtaPhiE(pt->at(m_index)*m_scale,eta->at(m_index),phi->at(m_index),es->at(m_index)*m_scale);
     return p4;
   }
@@ -54,12 +58,12 @@ int main(int argc, char* argv[]) {
   auto el_sf = hww.read<float>("scaleFactor_ELE");
   auto mu_sf = hww.read<float>("scaleFactor_MUON");
 
-  auto lep_pt_MeV = hww.read<ROOT::RVec<float>>("lep_pt");
-  // auto lep_pt_MeV = hww.read<ROOT::RVec<float>>("lep_pt").vary("lptcone30", "lep_ptcone30");
-  auto lep_eta = hww.read<ROOT::RVec<float>>("lep_eta");
-  auto lep_phi = hww.read<ROOT::RVec<float>>("lep_phi");
-  auto lep_E_MeV = hww.read<ROOT::RVec<float>>("lep_E");
-  auto lep_Q = hww.read<ROOT::RVec<float>>("lep_charge");
+  auto lep_pt_MeV = hww.read<RVecF>("lep_pt");
+  // auto lep_pt_MeV = hww.read<RVecF>("lep_pt").vary("lptcone30", "lep_ptcone30");
+  auto lep_eta = hww.read<RVecF>("lep_eta");
+  auto lep_phi = hww.read<RVecF>("lep_phi");
+  auto lep_E_MeV = hww.read<RVecF>("lep_E");
+  auto lep_Q = hww.read<RVecF>("lep_charge");
   auto lep_type = hww.read<ROOT::RVec<unsigned int>>("lep_type");
   auto met_MeV = hww.read<float>("met_et");
   auto met_phi = hww.read<float>("met_phi");
@@ -75,7 +79,7 @@ int main(int argc, char* argv[]) {
   auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_phi_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_E_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto n_lep_sel = hww.define([](ROOT::RVec<float> const& lep){return lep.size();})(lep_pt_sel);
+  auto n_lep_sel = hww.define([](RVecF const& lep){return lep.size();})(lep_pt_sel);
 
   auto l1p4 = hww.define<ScaledP4>(0)\
                   (lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
@@ -87,9 +91,9 @@ int main(int argc, char* argv[]) {
                   // .vary("lp4_dn",1,0.98)\
                   // .vary("lp4_up",1,1.02)\
 
-  auto llp4 = hww.define([](const TLorentzVector& p4, const TLorentzVector& q4){return (p4+q4);})(l1p4,l2p4);
+  auto llp4 = hww.define([](const TLV& p4, const TLV& q4){return (p4+q4);})(l1p4,l2p4);
   auto pth = hww.define(
-    [](const TLorentzVector& llp4, float met, float met_phi) {
+    [](const TLV& llp4, float met, float met_phi) {
       TVector2 ptll; ptll.SetMagPhi(llp4.Pt(), llp4.Phi());
       TVector2 met2d; met2d.SetMagPhi(met, met_phi);
       return (ptll+met2d).Mod();
@@ -103,16 +107,18 @@ int main(int argc, char* argv[]) {
                     // reminder: delayed math operations
 
                                              // custom expressions also possible
-  auto cut2los = cut2l.channel<cut>("2los",  [](const ROOT::RVec<float>& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
+  auto cut2los = cut2l.channel<cut>("2los",  [](const RVecF& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
   auto cut2ldf = cut2los.filter<cut>("2ldf", [](const ROOT::RVec<int>& lep_type){return lep_type.at(0)+lep_type.at(1)==24;})(lep_type);
   auto cut2lsf = cut2los.filter<cut>("2lsf", [](const ROOT::RVec<int>& lep_type){return (lep_type.at(0)+lep_type.at(1)==22)||(lep_type.at(0)+lep_type.at(1)==26);})(lep_type);
 
   auto pth_2los = hww.book<Histogram<1,float>>(std::string("pth"),50,0,400).fill(pth).at(cut2los);
 
-  auto pth_hists = hww.book<Histogram<1,float>>(std::string("pth"),50,0,400).fill(pth).at(cut2lsf,cut2ldf);
+  auto pth_hists = hww.book<Histogram<1,float>>("pth",50,0,400).fill(pth).at(cut2lsf,cut2ldf);
 
-  auto l1pt = lep_pt_sel[ hww.constant(0) ]; 
-  auto l2pt = lep_pt_sel[ hww.constant(1) ]; 
+  // bonus: "recycle" a definition for different input columns
+  auto get_pt = hww.define([](TLV const& p4){return p4.Pt();});
+  auto l1pt = get_pt(l1p4);
+  auto l2pt = get_pt(l2p4);
   auto l1n2pt_hists = hww.book<Histogram<1,float>>(std::string("l1n2pt"),50,0,200).fill(l1pt).fill(l2pt).at(cut2los, cut2lsf, cut2ldf);
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
