@@ -14,7 +14,8 @@
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
-#include "ana/table.h"
+#include "ana/input.h"
+#include "ana/column.h"
 
 class Event : public ana::input::dataset<Event>
 {
@@ -29,11 +30,8 @@ public:
 	Event(const std::vector<std::string>& inputFiles, const std::string& treeName = "CollectionTree");
 	virtual ~Event() = default;
 
-	virtual ana::input::partition allocate() override;
-
-  // this can (should?) be implemented to normalize by xAOD::CutBookkeeper's sumOfWeights
-	// virtual double normalize() override;
-
+	ana::input::partition allocate();
+	double normalize() const;
 	std::shared_ptr<Loop> open(const ana::input::range& part) const;
 
 protected:
@@ -50,7 +48,7 @@ public:
 	~Loop() = default;
 
 	template <typename U>
-	std::shared_ptr<Container<U>> read(const std::string& name, std::string containerName="") const;
+	std::shared_ptr<Container<U>> read(std::string containerName) const;
 
 	virtual void begin() override;
 	virtual bool next() override;
@@ -63,12 +61,12 @@ protected:
 };
 
 template <typename T>
-class Event::Container : public ana::column<T>::reader
+class Event::Container : public ana::column::reader<T>
 {
 
 public:
-	Container(const std::string& name, const std::string& containerName, xAOD::TEvent& event) :
-	ana::column<T>::reader(name),
+	Container(const std::string& containerName, xAOD::TEvent& event) :
+	ana::column::reader<T>(),
 	m_containerName(containerName),
 	m_event(&event)
 	{}
@@ -90,8 +88,7 @@ protected:
 };
 
 template <typename U>
-std::shared_ptr<Event::Container<U>> Event::Loop::read(const std::string& name, std::string containerName) const
+std::shared_ptr<Event::Container<U>> Event::Loop::read(std::string containerName) const
 {
-	if (containerName.empty()) containerName = name;
-	return std::make_shared<Container<U>>(name,containerName,*m_event);
+	return std::make_shared<Container<U>>(containerName,*m_event);
 }

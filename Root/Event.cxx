@@ -14,6 +14,11 @@ Event::Event(const std::vector<std::string>& inputFiles, const std::string& tree
 	xAOD::Init().ignore();
 }
 
+double Event::normalize() const
+{
+	return 1.0;  // can (should?) normalize xAOD::CutBookkeeper sumOfWeights
+}
+
 ana::input::partition Event::allocate()
 {
 	TDirectory::TContext c;
@@ -43,7 +48,7 @@ ana::input::partition Event::allocate()
 		long long fileEntries = event->getEntries();
 		// add part to partition
 		m_goodFiles.push_back(filePath);
-		partition.add(ipart++,offset,offset+fileEntries);
+		partition.add_part(ipart++,offset,offset+fileEntries);
 		offset += fileEntries;
 	}
 

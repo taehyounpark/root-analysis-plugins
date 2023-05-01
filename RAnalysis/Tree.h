@@ -32,7 +32,7 @@ public:
 	Tree(const std::string& treeName, const std::vector<std::string>& allFiles);
 	~Tree() = default;
 
-	ana::input::partition allocate();
+ 	ana::input::partition allocate();
 	std::shared_ptr<Reader> open(const ana::input::range& part) const;
 
 protected:
