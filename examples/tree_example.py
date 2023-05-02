@@ -6,7 +6,7 @@ ana = ROOT.ana
 
 ana.multithread.enable(2)
 hww = ana.analysis['Tree']()
-hww.open( "mini", ["hww_mc.root"] )
+hww.open( "mini", ["hww.root"] )
 
 mc_weight = hww.read['float']("mcWeight")
 el_sf = hww.read['float']("scaleFactor_ELE")
