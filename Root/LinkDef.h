@@ -39,7 +39,7 @@
 #pragma link C++ class ana::action+;
 
 #pragma link C++ class ana::term<float>+;
-#pragma link C++ class ana::term<float>+;
+#pragma link C++ class ana::cell<float>+;
 #pragma link C++ class ana::observable<float>+;
 #pragma link C++ class ana::variable<float>+;
 
@@ -59,10 +59,33 @@
 #pragma link C++ class Histogram<3,ROOT::RVec<float>>+;
 
 #pragma link C++ class Tree+;
-#pragma link C++ class CsvData+;
+#pragma link C++ class RDS+;
+#pragma link C++ class Event+;
 
 #pragma link C++ class ana::analysis<Tree>+;
 #pragma link C++ class ana::sample<Tree>+;
+
+#pragma link C++ class ana::analysis<Tree>::delayed<ana::column::constant<double>>+;
+#pragma link C++ class ana::analysis<Tree>::varied<ana::column::constant<double>>+;
+
+#pragma link C++ class ana::analysis<Tree>::delayed<Histogram<1,float>>+;
+#pragma link C++ class ana::analysis<Tree>::varied<Histogram<1,float>>+;
+
+#pragma link C++ class ana::analysis<Tree>::delayed<ana::selection::cut>+;
+#pragma link C++ class ana::analysis<Tree>::delayed<ana::selection::weight>+;
+#pragma link C++ class ana::analysis<Tree>::varied<ana::selection::cut>+;
+#pragma link C++ class ana::analysis<Tree>::varied<ana::selection::weight>+;
+
+#pragma link C++ class ana::analysis<Event>::delayed<ana::column::constant<double>>+;
+#pragma link C++ class ana::analysis<Event>::varied<ana::column::constant<double>>+;
+
+#pragma link C++ class ana::analysis<Event>::delayed<Histogram<1,float>>+;
+#pragma link C++ class ana::analysis<Event>::varied<Histogram<1,float>>+;
+
+#pragma link C++ class ana::analysis<Event>::delayed<ana::selection::cut>+;
+#pragma link C++ class ana::analysis<Event>::delayed<ana::selection::weight>+;
+#pragma link C++ class ana::analysis<Event>::varied<ana::selection::cut>+;
+#pragma link C++ class ana::analysis<Event>::varied<ana::selection::weight>+;
 
 #pragma link C++ class ana::output+;
 #pragma link C++ class Folder+;

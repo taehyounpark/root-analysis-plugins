@@ -72,6 +72,7 @@ class Histogram<1,ROOT::RVec<Prec>> : public ana::counter::logic<std::shared_ptr
 {
 
 public:
+	Histogram(const std::string& name, unsigned int nbins, double min, double xmax);
 	Histogram(const std::string& name, const std::vector<double>& xbins);
 	virtual ~Histogram() = default;
 
@@ -210,6 +211,14 @@ std::shared_ptr<TH3> Histogram<3,Prec>::result() const
 }
 
 // vector<T>
+
+template <typename Prec>
+Histogram<1,ROOT::RVec<Prec>>::Histogram(const std::string& name, unsigned int nbins, double xmin, double xmax) :
+	ana::counter::logic<std::shared_ptr<TH1>(ROOT::RVec<Prec>)>()
+{
+	m_hist = HistogramUtils::makeHist<1,Prec>(nbins,xmin,xmax);
+	m_hist->SetName(name.c_str());
+}
 
 template <typename Prec>
 Histogram<1,ROOT::RVec<Prec>>::Histogram(const std::string& name, const std::vector<double>& xbins) :
