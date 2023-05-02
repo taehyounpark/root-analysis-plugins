@@ -9,12 +9,12 @@
 #include "ana/vecutils.h"
 #include "ana/sample.h"
 
-Tree::Tree(const std::string& treeName, std::initializer_list<std::string> allFiles) :
+Tree::Tree(std::initializer_list<std::string> allFiles, const std::string& treeName) :
 	m_treeName(treeName),
 	m_allFiles(std::vector<std::string>(allFiles.begin(), allFiles.end()))
 {}
 
-Tree::Tree(const std::string& treeName, const std::vector<std::string>& allFiles) :
+Tree::Tree(const std::vector<std::string>& allFiles, const std::string& treeName) :
 	m_treeName(treeName),
 	m_allFiles(allFiles)
 {}

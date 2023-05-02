@@ -8,6 +8,8 @@
 atlas_subdir( RAnalysis )
 
 find_package( ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad ROOTVecOps Tree TreePlayer Rint Postscript Matrix Physics MathCore Thread MultiProc ROOTDataFrame )
+find_library( ROOT_TREEPLAYER_LIBRARY TreePlayer HINTS ${ROOT_LIBRARY_DIR} REQUIRED )
+find_library( ROOT_RVECOPS_LIBRARY ROOTVecOps HINTS ${ROOT_LIBRARY_DIR} REQUIRED )
 
 atlas_add_root_dictionary( 
   RAnalysis RADictInput
@@ -38,10 +40,13 @@ atlas_add_library(
 # for some reason, template instantations fail for analysis<Tree>
 # but are accessible from ROOT interpreter session through the linked dictionary
 # maybe it's a G++ problem
+# UPDATE: the above is not true, it was just a linking thing
+# however, it does fail for another reason: the operator definitions for delayed columns are not working
+# TODO: fix this
 # atlas_add_executable( 
-#   hww_example examples/hww_example.cxx 
-#   INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
-#   LINK_LIBRARIES ana RAnalysis
+#   tree_example examples/tree_example.cxx 
+#   INCLUDE_DIRS ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR}
+#   LINK_LIBRARIES ana RAnalysis ${ROOT_LIBRARIES}
 # )
 
 #atlas_install_data( share/* )

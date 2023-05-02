@@ -28,17 +28,17 @@ public:
 	class Branch;
 
 public:
-	Tree(const std::string& treeName, std::initializer_list<std::string> allFiles);
-	Tree(const std::string& treeName, const std::vector<std::string>& allFiles);
+	Tree(std::initializer_list<std::string> filePaths, const std::string& treeName);
+	Tree(const std::vector<std::string>& filePaths, const std::string& treeName);
 	~Tree() = default;
 
  	ana::input::partition allocate();
 	std::shared_ptr<Reader> open(const ana::input::range& part) const;
 
 protected:
-	std::string m_treeName;
 	std::vector<std::string> m_allFiles;
 	std::vector<std::string> m_goodFiles;
+	std::string m_treeName;
 
 };
 
