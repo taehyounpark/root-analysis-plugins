@@ -44,11 +44,11 @@ install(DIRECTORY
   DESTINATION lib
   )
 
-#file(COPY_FILE examples/hww_mc.root ${PROJECT_BINARY_DIR}/hww_mc.root ONLY_IF_DIFFERENT)
-#add_executable(tree_example examples/tree_example.cxx)
-#target_compile_features(tree_example PRIVATE cxx_std_17)
-#target_include_directories(tree_example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS})
-#target_link_libraries(tree_example RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
+file(COPY_FILE data/hww.root ${PROJECT_BINARY_DIR}/hww.root ONLY_IF_DIFFERENT)
+add_executable(tree_example examples/tree_example.cxx)
+target_compile_features(tree_example PRIVATE cxx_std_17)
+target_include_directories(tree_example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${ANA_INCLUDE_DIRS})
+target_link_libraries(tree_example RAnalysis ana ROOT::Gpad ROOT::Graf ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::Physics ROOT::MathCore ROOT::ROOTDataFrame)
 #
 #file(COPY_FILE benchmarks/dimuon.csv ${PROJECT_BINARY_DIR}/dimuon.csv ONLY_IF_DIFFERENT)
 #add_executable(csv_benchmark benchmarks/csv_benchmark.cxx)
