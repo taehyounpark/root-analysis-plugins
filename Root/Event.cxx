@@ -6,9 +6,10 @@
 #include "xAODCutFlow/CutBookkeeperContainer.h"
 #include "xAODCutFlow/CutBookkeeperAuxContainer.h"
 
-Event::Event(const std::vector<std::string>& inputFiles, const std::string& treeName) :
-	m_treeName(treeName),
-	m_inputFiles(inputFiles)
+Event::Event(const std::vector<std::string>& inputFiles, const std::string& collection, const std::string& metadata) :
+	m_inputFiles(inputFiles),
+	m_treeName(collection),
+	m_metaName(metadata)
 {
 	ROOT::EnableThreadSafety();
 	xAOD::Init().ignore();
@@ -22,15 +23,16 @@ double Event::normalize() const
 ana::input::partition Event::allocate()
 {
 	TDirectory::TContext c;
-	ana::input::partition partition;
 
-	long long offset = 0ll;
+	ana::input::partition parts;
 	unsigned int ipart = 0;
+	long long offset = 0;
+
 	// check all files for tree clusters
 	for (const auto& filePath : m_inputFiles) {
 
 		// check file
-		std::unique_ptr<TFile> file(TFile::Open(filePath.c_str()));
+		auto file = std::unique_ptr<TFile>(TFile::Open(filePath.c_str()));
 		if (!file) {
 			continue;
 		} else if (file->IsZombie()) {
@@ -46,13 +48,13 @@ ana::input::partition Event::allocate()
 
 		// get file entries
 		long long fileEntries = event->getEntries();
-		// add part to partition
+		// add part to parts
 		m_goodFiles.push_back(filePath);
-		partition.add_part(ipart++,offset,offset+fileEntries);
+		parts.add_part(ipart++,offset,offset+fileEntries);
 		offset += fileEntries;
 	}
 
-	return partition;
+	return parts;
 }
 
 std::shared_ptr<Event::Loop> Event::open(const ana::input::range& part) const 

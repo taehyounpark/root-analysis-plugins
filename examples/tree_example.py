@@ -21,13 +21,15 @@ lep_type = hww.read['ROOT::RVec<unsigned int>']("lep_type")
 met_MeV = hww.read['float']("met_et")
 met_phi = hww.read['float']("met_phi")
 
-weighted = hww.filter['ana::selection::cut']("mcWeight")(mc_weight)
+print(mc_weight)
+
+weighted = hww.filter['ana::selection::cut']("mcWeight").apply(mc_weight)
 
 print(weighted)
 
-lep_pt_hist = hww.book['Histogram<1,float>']("lep_pt",100,0,200).fill(lep_pt_MeV)
+# lep_pt_hist = hww.book['Histogram<1,float>']("lep_pt",100,0,200).fill(lep_pt_MeV)
 
-print(lep_pt_hist)
+# print(lep_pt_hist)
 
 # lep_pt_hist.result().Draw()
 # ROOT.gPad.Print("lep_pt.pdf")

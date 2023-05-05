@@ -30,7 +30,7 @@ using TLV = TLorentzVector;
 int main() {
 
   auto ttbar = ana::analysis<Event>();
-  ttbar.open(std::vector<std::string>{"/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/ASG/DAOD_PHYS/p5169/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13167_p5169/DAOD_PHYS.29445530._000001.pool.root.1"});
+  ttbar.open({"/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/ASG/DAOD_PHYS/p5169/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13167_p5169/DAOD_PHYS.29445530._000001.pool.root.1"},"CollectionTree");
 
   auto allMuons = ttbar.read<xAOD::MuonContainer>("Muons");
   auto eventInfo = ttbar.read<xAOD::EventInfo>("EventInfo");

@@ -27,7 +27,7 @@ public:
 	class Container;
 
 public:
-	Event(const std::vector<std::string>& inputFiles, const std::string& treeName = "CollectionTree");
+	Event(const std::vector<std::string>& inputFiles, const std::string& collection = "CollectionTree", const std::string& metadata = "MetaData");
 	virtual ~Event() = default;
 
 	ana::input::partition allocate();
@@ -35,10 +35,11 @@ public:
 	std::shared_ptr<Loop> open(const ana::input::range& part) const;
 
 protected:
-	std::string m_treeName;
 	std::vector<std::string> m_inputFiles;
-	std::vector<std::string> m_goodFiles;
+	std::string m_treeName;
+	std::string m_metaName;
 
+	std::vector<std::string> m_goodFiles;
 };
 
 class Event::Loop : public ana::input::reader<Loop>
