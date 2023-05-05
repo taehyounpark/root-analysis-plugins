@@ -1,6 +1,33 @@
+#include <memory>
+#include <chrono>
+#include <iostream>
+#include <sstream>
 
+#include <ROOT/RVec.hxx>
+#include "TPad.h"
+#include "TFile.h"
+#include "TLorentzVector.h"
+#include "TTreeReaderValue.h"
+#include "TTreeReader.h"
+#include "TVector2.h"
+#include "TH1F.h"
 
-void xaod_example() {
+#include "ana/analysis.h"
+#include "ana/definition.h"
+#include "ana/output.h"
+
+#include "RAnalysis/Event.h"
+#include "RAnalysis/Histogram.h"
+#include "RAnalysis/Folder.h"
+
+#include <xAODEventInfo/EventInfo.h>
+#include <xAODMuon/MuonContainer.h>
+
+using RVecF = ROOT::RVec<float>;
+using RVecD = ROOT::RVec<double>;
+using TLV = TLorentzVector;
+
+int main() {
 
   auto ttbar = ana::analysis<Event>();
   ttbar.open(std::vector<std::string>{"/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/ASG/DAOD_PHYS/p5169/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13167_p5169/DAOD_PHYS.29445530._000001.pool.root.1"});
@@ -27,22 +54,27 @@ void xaod_example() {
   };
 
   auto selMuons = ttbar.define<MuonSelection>(1.5)(allMuons);
-  auto selMuonsPtMeV = ttbar.define(
+  auto selMuonsPtMeV = ttbar.calculate(
     [](ConstDataVector<xAOD::MuonContainer> const& muons){
-      ROOT::RVec<double> pts;
+      RVecD pts;
       for( const xAOD::Muon* mu : muons ) {
-        pts.push_back(mu->pt()/1000.0);
+        pts.push_back(mu->pt());
       }
     return pts;
     })
     (selMuons);
-  auto selMuonsPt = selMuonsPtMeV;
+  auto selMuonsPt = selMuonsPtMeV / ttbar.constant(1000.);
 
-  auto mcEventWeight = ttbar.define([](const xAOD::EventInfo& eventInfo){return eventInfo.mcEventWeight();})(eventInfo);
-  auto inclusiveWeighted = ttbar.filter<ana::selection::cut>("mcEventWeight")(mcEventWeight);
-  auto selMuonsPtHist = ttbar.book<Histogram<1,ROOT::RVec<float>>>("muons_pt",100,0,100).fill(selMuonsPt).at(inclusiveWeighted);
+  using cut = ana::selection::cut;
+  using weight = ana::selection::weight;
+
+  auto mcEventWeight = ttbar.calculate([](const xAOD::EventInfo& eventInfo){return eventInfo.mcEventWeight();})(eventInfo);
+  auto mcEventWeighted = ttbar.filter<weight>("mcEventWeight")(mcEventWeight);
+
+  auto selMuonsPtHist = ttbar.book<Histogram<1,RVecF>>("muons_pt",100,0,100).fill(selMuonsPt).at(mcEventWeighted);
 
   selMuonsPtHist.result()->Draw();
   gPad->Print("muons_pt.pdf");
 
+  return 0;
 }

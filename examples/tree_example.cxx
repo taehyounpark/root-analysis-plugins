@@ -29,24 +29,22 @@ class NthP4 : public ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<
 
 public:
 
-  NthP4(unsigned int index, double scale=1.0) : 
+  NthP4(unsigned int index) : 
     ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>(),
-    m_index(index),
-    m_scale(scale)
+    m_index(index)
   {}
 
   virtual ~NthP4() = default;
 
   virtual TLV evaluate(ana::observable<ROOT::RVec<double>> pt, ana::observable<ROOT::RVec<double>> eta, ana::observable<ROOT::RVec<double>> phi, ana::observable<ROOT::RVec<double>> es) const override {
     TLV p4;
-    p4.SetPtEtaPhiE(pt->at(m_index)*m_scale,eta->at(m_index),phi->at(m_index),es->at(m_index)*m_scale);
+    p4.SetPtEtaPhiE(pt->at(m_index),eta->at(m_index),phi->at(m_index),es->at(m_index));
     return p4;
   }
 
 protected:
 
   unsigned int m_index;
-  double m_scale;
 
 };
  
@@ -70,6 +68,8 @@ int main(int argc, char* argv[]) {
   auto met_MeV = hww.read<float>("met_et");
   auto met_phi = hww.read<float>("met_phi");
 
+  auto Escale = hww.calculate([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
+
   // convert MeV -> GeV
   auto MeV = hww.constant(1000.0);
   auto lep_pt = lep_pt_MeV / MeV;  // ROOT::RVec<float> / double
@@ -77,20 +77,19 @@ int main(int argc, char* argv[]) {
   auto met = met_MeV / MeV;
 
   auto lep_eta_max = hww.constant(2.4);
-  auto Escale = hww.define([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
 
   auto lep_pt_sel = Escale(lep_pt)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_E_sel = Escale(lep_E)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_phi_sel = lep_phi[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto nlep_sel = hww.define([](RVecD const& lep){return lep.size();})(lep_pt_sel);
+  auto nlep_sel = hww.calculate([](RVecD const& lep){return lep.size();})(lep_pt_sel);
 
   auto l1p4 = hww.define<NthP4>(0)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_MeV);
   auto l2p4 = hww.define<NthP4>(1)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_MeV);
 
-  auto llp4 = hww.define([](const TLV& p4, const TLV& q4){return (p4+q4);})(l1p4,l2p4);
-  auto mll = hww.define([](const TLV& p4){return p4.M();})(llp4);
-  auto pth = hww.define(
+  auto llp4 = hww.calculate([](const TLV& p4, const TLV& q4){return (p4+q4);})(l1p4,l2p4);
+  auto mll = hww.calculate([](const TLV& p4){return p4.M();})(llp4);
+  auto pth = hww.calculate(
     [](const TLV& p3, float q, float q_phi) {
       TVector2 p2; p2.SetMagPhi(p3.Pt(), p3.Phi());
       TVector2 q2; q2.SetMagPhi(q, q_phi);
@@ -122,7 +121,7 @@ int main(int argc, char* argv[]) {
 
   // auto l1pt_hist = hww.book<Histogram<1,float>>("l1pt",50,0,400).fill(l1pt);
 
-  auto get_pt = hww.define([](TLV const& p4){return p4.Pt();});
+  auto get_pt = hww.calculate([](TLV const& p4){return p4.Pt();});
   auto l1pt = get_pt(l1p4);
   auto l2pt = get_pt(l2p4);
   auto l1n2pt_hists = hww.book<Histogram<1,float>>(std::string("l1n2pt"),50,0,200).fill(l1pt).fill(l2pt).at(cut_2los, cut_2lsf, cut_2ldf);

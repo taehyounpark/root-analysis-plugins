@@ -1,3 +1,4 @@
+---
 G++ compilation error (`tree_example.cxx`):
 ```cpp
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
@@ -12,8 +13,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   311 |         DEFINE_DELAYED_BINARY_OP(division,/)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
@@ -25,8 +26,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   311 |         DEFINE_DELAYED_BINARY_OP(division,/)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -34,7 +35,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<ROOT::VecOps::RVec<float> > >::operator/<ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<ROOT::VecOps::RVec<float> > >&, ana::cell_value_t<ana::column::constant<double> >&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<ROOT::VecOps::RVec<float> > >::operator/<ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<ROOT::VecOps::RVec<float> > >&, ana::cell_value_t<ana::column::constant<double> >&)>]':
 /home/thpark/ana/AnalysisExample/ana/ana/delayed.h:311:2:   required from 'auto ana::analysis<T>::delayed<U>::operator/(const Arg&) const [with Arg = ana::analysis<Tree>::delayed<ana::column::constant<double> >; V = Tree::Branch<ROOT::VecOps::RVec<float> >; std::enable_if_t<(is_column_v<V> && has_division_v<typename std::decay<decltype (declval<V>().value())>::type, typename std::decay<decltype (declval<typename Arg::action_type>().value())>::type>), V>* <anonymous> = 0; U = Tree::Branch<ROOT::VecOps::RVec<float> >; T = Tree]'
 /home/thpark/ana/AnalysisExample/ana/ana/varied.h:348:1:   required by substitution of 'template<class Arg> ana::analysis<Tree>::varied<typename decltype (declval<ana::analysis<Tree>::delayed<Tree::Branch<ROOT::VecOps::RVec<float> > > >().ana::analysis<Tree>::delayed<Tree::Branch<ROOT::VecOps::RVec<float> > >::operator/<Arg, V, <anonymous> >(forward<Arg>(b).nominal()))::action_type> ana::analysis<Tree>::varied<Tree::Branch<ROOT::VecOps::RVec<float> > >::operator/<Arg>(Arg&&) const [with Arg = ana::analysis<Tree>::delayed<ana::column::constant<double> >&]'
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:72:30:   required from here
@@ -152,8 +153,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   311 |         DEFINE_DELAYED_BINARY_OP(division,/)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
@@ -165,8 +166,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   311 |         DEFINE_DELAYED_BINARY_OP(division,/)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -174,7 +175,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<float> >::operator/<ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<float> >&, ana::cell_value_t<ana::column::constant<double> >&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<float> >::operator/<ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<float> >&, ana::cell_value_t<ana::column::constant<double> >&)>]':
 /home/thpark/ana/AnalysisExample/ana/ana/delayed.h:311:2:   required from 'auto ana::analysis<T>::delayed<U>::operator/(const Arg&) const [with Arg = ana::analysis<Tree>::delayed<ana::column::constant<double> >; V = Tree::Branch<float>; std::enable_if_t<(is_column_v<V> && has_division_v<typename std::decay<decltype (declval<V>().value())>::type, typename std::decay<decltype (declval<typename Arg::action_type>().value())>::type>), V>* <anonymous> = 0; U = Tree::Branch<float>; T = Tree]'
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:74:24:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(ana::analysis<Tree>::delayed<Tree::Branch<float> >::operator/<ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<float> >&, ana::cell_value_t<ana::column::constant<double> >&)>)'
@@ -197,16 +198,16 @@ In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_e
    77 |   auto Escale = hww.define([](RVecF E){return E*1.0;}).vary("lp4_up",[](RVecF E){return E*1.01;}).vary("lp4_dn",[](RVecF E){return E*0.99;});
       |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:77:27: note:   couldn't deduce template parameter 'Def'
    77 |   auto Escale = hww.define([](RVecF E){return E*1.0;}).vary("lp4_up",[](RVecF E){return E*1.01;}).vary("lp4_dn",[](RVecF E){return E*0.99;});
       |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -214,7 +215,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(RVecF)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(RVecF)>]':
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:77:27:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(main(int, char**)::<lambda(RVecF)>)'
    44 |   template <typename Lmbd> using equation_t = typename decltype(make_equation(std::function(std::declval<Lmbd>())))::element_type;
@@ -243,8 +244,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   315 |         DEFINE_DELAYED_BINARY_OP(less_than,<)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
@@ -256,8 +257,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   315 |         DEFINE_DELAYED_BINARY_OP(less_than,<)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -265,7 +266,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<ROOT::VecOps::RVec<float> > >::operator< <ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<ROOT::VecOps::RVec<float> > >&, ana::cell_value_t<ana::column::constant<double> >&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<ROOT::VecOps::RVec<float> > >::operator< <ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<ROOT::VecOps::RVec<float> > >&, ana::cell_value_t<ana::column::constant<double> >&)>]':
 /home/thpark/ana/AnalysisExample/ana/ana/delayed.h:315:2:   required from 'auto ana::analysis<T>::delayed<U>::operator<(const Arg&) const [with Arg = ana::analysis<Tree>::delayed<ana::column::constant<double> >; V = Tree::Branch<ROOT::VecOps::RVec<float> >; std::enable_if_t<(is_column_v<V> && has_less_than_v<typename std::decay<decltype (declval<V>().value())>::type, typename std::decay<decltype (declval<typename Arg::action_type>().value())>::type>), V>* <anonymous> = 0; U = Tree::Branch<ROOT::VecOps::RVec<float> >; T = Tree]'
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:78:47:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(ana::analysis<Tree>::delayed<Tree::Branch<ROOT::VecOps::RVec<float> > >::operator< <ana::analysis<Tree>::delayed<ana::column::constant<double> > >(const ana::analysis<Tree>::delayed<ana::column::constant<double> >&) const::<lambda(ana::cell_value_t<Tree::Branch<ROOT::VecOps::RVec<float> > >&, ana::cell_value_t<ana::column::constant<double> >&)>)'
@@ -295,8 +296,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   320 |         DEFINE_DELAYED_UNARY_OP(minus,-)
       |         ^~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
@@ -308,8 +309,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   320 |         DEFINE_DELAYED_UNARY_OP(minus,-)
       |         ^~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -317,7 +318,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<ana::column::constant<double> >::operator-<>() const::<lambda(ana::cell_value_t<ana::column::constant<double> >&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<ana::column::constant<double> >::operator-<>() const::<lambda(ana::cell_value_t<ana::column::constant<double> >&)>]':
 /home/thpark/ana/AnalysisExample/ana/ana/delayed.h:320:2:   required from 'auto ana::analysis<T>::delayed<U>::operator-() const [with V = ana::column::constant<double>; std::enable_if_t<(is_column_v<V> && has_minus_v<typename std::decay<decltype (declval<V>().value())>::type>), V>* <anonymous> = 0; U = ana::column::constant<double>; T = Tree]'
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:78:74:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(ana::analysis<Tree>::delayed<ana::column::constant<double> >::operator-<>() const::<lambda(ana::cell_value_t<ana::column::constant<double> >&)>)'
@@ -340,16 +341,16 @@ In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_e
    82 |   auto n_lep_sel = hww.define([](RVecF const& lep){return lep.size();})(lep_pt_sel);
       |                    ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:82:30: note:   couldn't deduce template parameter 'Def'
    82 |   auto n_lep_sel = hww.define([](RVecF const& lep){return lep.size();})(lep_pt_sel);
       |                    ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -357,7 +358,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const RVecF&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const RVecF&)>]':
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:82:30:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(main(int, char**)::<lambda(const RVecF&)>)'
    44 |   template <typename Lmbd> using equation_t = typename decltype(make_equation(std::function(std::declval<Lmbd>())))::element_type;
@@ -379,16 +380,16 @@ In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_e
    87 |   auto llp4 = hww.define([](const TLV& p4, const TLV& q4){return (p4+q4);})(l1p4,l2p4);
       |               ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:87:25: note:   couldn't deduce template parameter 'Def'
    87 |   auto llp4 = hww.define([](const TLV& p4, const TLV& q4){return (p4+q4);})(l1p4,l2p4);
       |               ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -396,7 +397,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const TLV&, const TLV&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const TLV&, const TLV&)>]':
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:87:25:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(main(int, char**)::<lambda(const TLV&, const TLV&)>)'
    44 |   template <typename Lmbd> using equation_t = typename decltype(make_equation(std::function(std::declval<Lmbd>())))::element_type;
@@ -428,8 +429,8 @@ In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_e
    93 |     })(llp4, met, met_phi);
       |     ~~                  
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:88:24: note:   couldn't deduce template parameter 'Def'
@@ -446,8 +447,8 @@ In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_e
    93 |     })(llp4, met, met_phi);
       |     ~~                  
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -455,7 +456,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const TLV&, float, float)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const TLV&, float, float)>]':
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:88:24:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(main(int, char**)::<lambda(const TLV&, float, float)>)'
    44 |   template <typename Lmbd> using equation_t = typename decltype(make_equation(std::function(std::declval<Lmbd>())))::element_type;
@@ -484,8 +485,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   310 |         DEFINE_DELAYED_BINARY_OP(multiplication,*)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
@@ -497,8 +498,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:220,
   310 |         DEFINE_DELAYED_BINARY_OP(multiplication,*)
       |         ^~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -506,7 +507,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<float> >::operator*<ana::analysis<Tree>::delayed<Tree::Branch<float> > >(const ana::analysis<Tree>::delayed<Tree::Branch<float> >&) const::<lambda(ana::cell_value_t<Tree::Branch<float> >&, ana::cell_value_t<Tree::Branch<float> >&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = ana::analysis<Tree>::delayed<Tree::Branch<float> >::operator*<ana::analysis<Tree>::delayed<Tree::Branch<float> > >(const ana::analysis<Tree>::delayed<Tree::Branch<float> >&) const::<lambda(ana::cell_value_t<Tree::Branch<float> >&, ana::cell_value_t<Tree::Branch<float> >&)>]':
 /home/thpark/ana/AnalysisExample/ana/ana/delayed.h:310:2:   required from 'auto ana::analysis<T>::delayed<U>::operator*(const Arg&) const [with Arg = ana::analysis<Tree>::delayed<Tree::Branch<float> >; V = Tree::Branch<float>; std::enable_if_t<(is_column_v<V> && has_multiplication_v<typename std::decay<decltype (declval<V>().value())>::type, typename std::decay<decltype (declval<typename Arg::action_type>().value())>::type>), V>* <anonymous> = 0; U = Tree::Branch<float>; T = Tree]'
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:99:66:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(ana::analysis<Tree>::delayed<Tree::Branch<float> >::operator*<ana::analysis<Tree>::delayed<Tree::Branch<float> > >(const ana::analysis<Tree>::delayed<Tree::Branch<float> >&) const::<lambda(ana::cell_value_t<Tree::Branch<float> >&, ana::cell_value_t<Tree::Branch<float> >&)>)'
@@ -580,16 +581,16 @@ In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_e
   109 |   auto get_pt = hww.define([](TLV const& p4){return p4.Pt();});
       |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::calculator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
-  107 |   auto define(const Args&... arguments) -> delayed<column::calculator<Def>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note: candidate: 'template<class Def, class ... Args> ana::analysis<T>::delayed<ana::column::evaluator<Def> > ana::analysis<T>::define(const Args& ...) [with Def = Def; Args = {Args ...}; T = Tree]'
+  107 |   auto define(const Args&... arguments) -> delayed<column::evaluator<Def>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:107:8: note:   template argument deduction/substitution failed:
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:109:27: note:   couldn't deduce template parameter 'Def'
   109 |   auto get_pt = hww.define([](TLV const& p4){return p4.Pt();});
       |                 ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
-  109 |   auto define(Lmbd const& lmbd) -> delayed<column::calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note: candidate: 'template<class Lmbd> ana::analysis<T>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::analysis<T>::define(const Lmbd&) [with Lmbd = Lmbd; T = Tree]'
+  109 |   auto define(Lmbd const& lmbd) -> delayed<column::evaluator<column::equation_t<Lmbd>>>;
       |        ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:109:8: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -597,7 +598,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::calculator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const TLV&)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Lmbd> ana::analysis<Tree>::delayed<ana::column::evaluator<typename decltype (ana::column::make_equation((Tree)(declval<Lmbd>())))::element_type> > ana::analysis<Tree>::define<Lmbd>(const Lmbd&) [with Lmbd = main(int, char**)::<lambda(const TLV&)>]':
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:109:27:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'Tree::Tree(main(int, char**)::<lambda(const TLV&)>)'
    44 |   template <typename Lmbd> using equation_t = typename decltype(make_equation(std::function(std::declval<Lmbd>())))::element_type;
@@ -638,18 +639,18 @@ In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_e
   293 |         for (int ix=0 ; ix<xs->size() ; ++ix) {
       |                         ~~^~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h: In instantiation of 'ana::analysis<T>::delayed<ana::selection::calculator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]':
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h: In instantiation of 'ana::analysis<T>::delayed<ana::selection::evaluator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]':
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:99:34:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:296:168: error: no matching function for call to 'ana::looper<Tree::Reader>::filter<ana::selection::weight>(const string&, ana::analysis<Tree>::filter<ana::selection::weight>(const string&)::<lambda(ana::looper<Tree::Reader>&)>::<lambda(double)>)'
-  296 |         auto sel = delayed<simple_selection_calculator_type>(*this, this->m_loopers.from_slots( [=](looper<dataset_reader_type>& lpr) { return lpr.template filter<Sel>(name,[](double x){return x;}); } ));
+  296 |         auto sel = delayed<simple_selection_evaluator_type>(*this, this->m_loopers.from_slots( [=](looper<dataset_reader_type>& lpr) { return lpr.template filter<Sel>(name,[](double x){return x;}); } ));
       |                                                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/experiment.h:8,
                  from /home/thpark/ana/AnalysisExample/ana/ana/looper.h:9,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/cutflow.h:24:14: note: candidate: 'template<class Sel, class Lmbd> std::shared_ptr<ana::selection::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::selection::cutflow::filter(const string&, Lmbd&&)'
-   24 |         auto filter(const std::string& name, Lmbd&& lmbd) -> std::shared_ptr<calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/cutflow.h:24:14: note: candidate: 'template<class Sel, class Lmbd> std::shared_ptr<ana::selection::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::selection::cutflow::filter(const string&, Lmbd&&)'
+   24 |         auto filter(const std::string& name, Lmbd&& lmbd) -> std::shared_ptr<evaluator<column::equation_t<Lmbd>>>;
       |              ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/cutflow.h:24:14: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
@@ -657,8 +658,8 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/computation.h:11,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Sel, class Lmbd> std::shared_ptr<ana::selection::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::selection::cutflow::filter(const string&, Lmbd&&) [with Sel = ana::selection::weight; Lmbd = ana::analysis<Tree>::filter<ana::selection::weight>(const string&)::<lambda(ana::looper<Tree::Reader>&)>::<lambda(double)>]':
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:296:161:   required from 'ana::analysis<T>::delayed<ana::selection::calculator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]'
+/home/thpark/ana/AnalysisExample/ana/ana/column.h: In substitution of 'template<class Sel, class Lmbd> std::shared_ptr<ana::selection::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::selection::cutflow::filter(const string&, Lmbd&&) [with Sel = ana::selection::weight; Lmbd = ana::analysis<Tree>::filter<ana::selection::weight>(const string&)::<lambda(ana::looper<Tree::Reader>&)>::<lambda(double)>]':
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:296:161:   required from 'ana::analysis<T>::delayed<ana::selection::evaluator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]'
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:99:34:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/column.h:44:84: error: no matching function for call to 'ana::selection::weight::weight(ana::analysis<Tree>::filter<ana::selection::weight>(const string&)::<lambda(ana::looper<Tree::Reader>&)>::<lambda(double)>)'
    44 |   template <typename Lmbd> using equation_t = typename decltype(make_equation(std::function(std::declval<Lmbd>())))::element_type;
@@ -684,18 +685,18 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/experiment.h:8,
                  from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:5,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h: In instantiation of 'ana::analysis<T>::delayed<ana::selection::calculator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]':
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h: In instantiation of 'ana::analysis<T>::delayed<ana::selection::evaluator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]':
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:99:34:   required from here
-/home/thpark/ana/AnalysisExample/ana/ana/cutflow.h:30:14: note: candidate: 'template<class Sel, class Lmbd> std::shared_ptr<ana::selection::calculator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::selection::cutflow::filter(const ana::selection&, const string&, Lmbd&&)'
-   30 |         auto filter(selection const& prev, const std::string& name, Lmbd&& lmbd) -> std::shared_ptr<calculator<column::equation_t<Lmbd>>>;
+/home/thpark/ana/AnalysisExample/ana/ana/cutflow.h:30:14: note: candidate: 'template<class Sel, class Lmbd> std::shared_ptr<ana::selection::evaluator<typename decltype (ana::column::make_equation((function<...auto...>)(declval<Lmbd>())))::element_type> > ana::selection::cutflow::filter(const ana::selection&, const string&, Lmbd&&)'
+   30 |         auto filter(selection const& prev, const std::string& name, Lmbd&& lmbd) -> std::shared_ptr<evaluator<column::equation_t<Lmbd>>>;
       |              ^~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/cutflow.h:30:14: note:   template argument deduction/substitution failed:
 In file included from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:296:168: note:   candidate expects 3 arguments, 2 provided
-  296 |         auto sel = delayed<simple_selection_calculator_type>(*this, this->m_loopers.from_slots( [=](looper<dataset_reader_type>& lpr) { return lpr.template filter<Sel>(name,[](double x){return x;}); } ));
+  296 |         auto sel = delayed<simple_selection_evaluator_type>(*this, this->m_loopers.from_slots( [=](looper<dataset_reader_type>& lpr) { return lpr.template filter<Sel>(name,[](double x){return x;}); } ));
       |                                                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:296:95: error: no matching function for call to 'ana::concurrent<ana::looper<Tree::Reader> >::from_slots(ana::analysis<Tree>::filter<ana::selection::weight>(const string&)::<lambda(ana::looper<Tree::Reader>&)>)'
-  296 |         auto sel = delayed<simple_selection_calculator_type>(*this, this->m_loopers.from_slots( [=](looper<dataset_reader_type>& lpr) { return lpr.template filter<Sel>(name,[](double x){return x;}); } ));
+  296 |         auto sel = delayed<simple_selection_evaluator_type>(*this, this->m_loopers.from_slots( [=](looper<dataset_reader_type>& lpr) { return lpr.template filter<Sel>(name,[](double x){return x;}); } ));
       |                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In file included from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:3,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
@@ -708,7 +709,7 @@ In file included from /home/thpark/ana/AnalysisExample/ana/ana/sample.h:3,
                  from /home/thpark/ana/AnalysisExample/ana/ana/analysis.h:12,
                  from /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:13:
 /home/thpark/ana/AnalysisExample/ana/ana/concurrent.h: In substitution of 'template<class Lmbd, class ... Args> ana::concurrent<typename std::invoke_result<Lmbd, ana::looper<Tree::Reader>&, Args& ...>::type::element_type> ana::concurrent<ana::looper<Tree::Reader> >::from_slots<Lmbd, Args ...>(Lmbd, const ana::concurrent<Args>& ...) const [with Lmbd = ana::analysis<Tree>::filter<ana::selection::weight>(const string&)::<lambda(ana::looper<Tree::Reader>&)>; Args = {}]':
-/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:296:88:   required from 'ana::analysis<T>::delayed<ana::selection::calculator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]'
+/home/thpark/ana/AnalysisExample/ana/ana/analysis.h:296:88:   required from 'ana::analysis<T>::delayed<ana::selection::evaluator<ana::column::equation<double(double)> > > ana::analysis<T>::filter(const string&) [with Sel = ana::selection::weight; T = Tree; std::string = std::__cxx11::basic_string<char>]'
 /home/thpark/ana/AnalysisExample/RAnalysis/examples/tree_example.cxx:99:34:   required from here
 /home/thpark/ana/AnalysisExample/ana/ana/concurrent.h:158:6: error: no type named 'type' in 'struct std::invoke_result<ana::analysis<Tree>::filter<ana::selection::weight>(const string&)::<lambda(ana::looper<Tree::Reader>&)>, ana::looper<Tree::Reader>&>'
   158 | auto ana::concurrent<T>::from_slots(Lmbd lmbd, const concurrent<Args>&... args) const -> concurrent<typename std::invoke_result_t<Lmbd,T&,Args&...>::element_type>
@@ -798,6 +799,9 @@ make[2]: *** [RAnalysis/CMakeFiles/tree_example.dir/examples/tree_example.cxx.o]
 make[1]: *** [RAnalysis/CMakeFiles/tree_example.dir/all] Error 2
 make: *** [all] Error 2
 ```
+Re-writing the lambda/function type trait deduction solved this (although not sure why it should have, should have been equivalent).
+
+---
 PyROOT binding error (`tree_example.py`):
 ````cpp
 input_line_74:7:181: error: no matching member function for call to 'fill'

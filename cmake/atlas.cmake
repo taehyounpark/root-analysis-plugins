@@ -43,11 +43,17 @@ atlas_add_library(
 # UPDATE: the above is not true, it was just a linking thing
 # however, it does fail for another reason: the operator definitions for delayed columns are not working
 # TODO: fix this
-# atlas_add_executable( 
-#   tree_example examples/tree_example.cxx 
-#   INCLUDE_DIRS ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR}
-#   LINK_LIBRARIES ana RAnalysis ${ROOT_LIBRARIES}
-# )
+atlas_add_executable( 
+  tree_example examples/tree_example.cxx 
+  INCLUDE_DIRS ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR}
+  LINK_LIBRARIES ana RAnalysis ${ROOT_LIBRARIES}
+)
+
+atlas_add_executable( 
+  xaod_example examples/xaod_example.cxx 
+  INCLUDE_DIRS ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR}
+  LINK_LIBRARIES ana RAnalysis ${ROOT_LIBRARIES} xAODMuon xAODEventInfo
+)
 
 #atlas_install_data( share/* )
 #atlas_install_python_modules( python/*.py )
