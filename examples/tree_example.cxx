@@ -51,8 +51,7 @@ protected:
 int main(int argc, char* argv[]) {
 
   ana::multithread::enable(2);
-  ana::analysis<Tree> hww;
-  hww.open( {"hww.root"}, "mini" );
+  ana::analysis<Tree> hww( {"hww.root"}, "mini" );
 
   auto mc_weight = hww.read<float>("mcWeight");
   auto el_sf = hww.read<float>("scaleFactor_ELE").vary("sf_var","scaleFactor_PILEUP");

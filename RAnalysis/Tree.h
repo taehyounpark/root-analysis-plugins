@@ -28,7 +28,6 @@ public:
 	class Branch;
 
 public:
-	Tree(std::initializer_list<std::string> filePaths, const std::string& treeName);
 	Tree(const std::vector<std::string>& filePaths, const std::string& treeName);
 	~Tree() = default;
 

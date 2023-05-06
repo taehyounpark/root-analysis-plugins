@@ -231,7 +231,7 @@ Histogram<1,ROOT::RVec<Prec>>::Histogram(const std::string& name, const std::vec
 template <typename Prec>
 void Histogram<1,ROOT::RVec<Prec>>::fill(ana::observable<ROOT::RVec<Prec>> xs, double w)
 {
-	for (int ix=0 ; ix<xs->size() ; ++ix) {
+	for (size_t ix ; ix<xs->size() ; ++ix) {
 		m_hist->Fill(xs.value()[ix],w);
 	}
 }
@@ -259,8 +259,10 @@ Histogram<2,ROOT::RVec<Prec>>::Histogram(const std::string& name, const std::vec
 template <typename Prec>
 void Histogram<2,ROOT::RVec<Prec>>::fill(ana::observable<ROOT::RVec<Prec>> xs, ana::observable<ROOT::RVec<Prec>> ys, double w)
 {
-	assert(xs->size() == ys->size());
-	for (int ix=0 ; ix<xs->size() ; ++ix) {
+	if (xs->size() != ys->size()) {
+		throw std::runtime_error("x- and y-arrays do not share the same size");
+	}
+	for (size_t ix ; ix<xs->size() ; ++ix) {
 		m_hist->Fill(xs.value()[ix],ys.value()[ix],w);
 	}
 }
@@ -288,9 +290,13 @@ Histogram<3,ROOT::RVec<Prec>>::Histogram(const std::string& name, const std::vec
 template <typename Prec>
 void Histogram<3,ROOT::RVec<Prec>>::fill(ana::observable<ROOT::RVec<Prec>> xs, ana::observable<ROOT::RVec<Prec>> ys, ana::observable<ROOT::RVec<Prec>> zs, double w)
 {
-	assert(xs->size() == ys->size());
-	assert(xs->size() == zs->size());
-	for (int ix=0 ; ix<xs->size() ; ++ix) {
+	if (xs->size() != ys->size()) {
+		throw std::runtime_error("x- and y-arrays do not share the same size");
+	}
+	if (xs->size() != zs->size()) {
+		throw std::runtime_error("x- and z-arrays do not share the same size");
+	}
+	for (size_t ix ; ix<xs->size() ; ++ix) {
 		m_hist->Fill(xs.value()[ix],ys.value()[ix],zs.value()[ix],w);
 	}
 }
