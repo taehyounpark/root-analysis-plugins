@@ -22,6 +22,7 @@
 
 using RVecF = ROOT::RVec<float>;
 using RVecD = ROOT::RVec<double>;
+using RVecUI = ROOT::RVec<unsigned int>;
 using TLV = TLorentzVector;
 
 class NthP4 : public ana::column::definition<TLV(ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>, ROOT::RVec<double>)>
@@ -63,11 +64,10 @@ int main(int argc, char* argv[]) {
   auto lep_phi = hww.read<RVecF>("lep_phi");
   auto lep_E_MeV = hww.read<RVecF>("lep_E");
   auto lep_Q = hww.read<RVecF>("lep_charge");
-  auto lep_type = hww.read<ROOT::RVec<unsigned int>>("lep_type");
+  auto lep_type = hww.read<RVecUI>("lep_type");
   auto met_MeV = hww.read<float>("met_et");
   auto met_phi = hww.read<float>("met_phi");
 
-  auto Escale = hww.calculate([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
 
   // convert MeV -> GeV
   auto MeV = hww.constant(1000.0);
@@ -77,20 +77,22 @@ int main(int argc, char* argv[]) {
 
   auto lep_eta_max = hww.constant(2.4);
 
+  auto Escale = hww.calculate([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
   auto lep_pt_sel = Escale(lep_pt)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_E_sel = Escale(lep_E)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto lep_phi_sel = lep_phi[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto nlep_sel = hww.calculate([](RVecD const& lep){return lep.size();})(lep_pt_sel);
 
-  auto l1p4 = hww.define<NthP4>(0)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_MeV);
-  auto l2p4 = hww.define<NthP4>(1)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_MeV);
+  auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
+  auto lep_phi_sel = lep_phi[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
 
-  auto llp4 = hww.calculate([](const TLV& p4, const TLV& q4){return (p4+q4);})(l1p4,l2p4);
+  auto l1p4 = hww.define<NthP4>(0)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
+  auto l2p4 = hww.define<NthP4>(1)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
+
+  auto llp4 = l1p4+l2p4;
   auto mll = hww.calculate([](const TLV& p4){return p4.M();})(llp4);
   auto pth = hww.calculate(
-    [](const TLV& p3, float q, float q_phi) {
-      TVector2 p2; p2.SetMagPhi(p3.Pt(), p3.Phi());
+    [](const TLV& p4, float q, float q_phi) {
+      TVector2 p2; p2.SetMagPhi(p4.Pt(), p4.Phi());
       TVector2 q2; q2.SetMagPhi(q, q_phi);
       return (p2+q2).Mod();
     })(llp4, met, met_phi);
@@ -115,11 +117,6 @@ int main(int argc, char* argv[]) {
   auto pth_2ldf_sr = pth_hist.at(cut_2ldf_sr);
   auto pth_2ldf_cr = pth_hist.at(cut_2ldf_cr);
 
-  auto nlep_incl = hww.book<Histogram<1,float>>(std::string("pth"),5,0,5).fill(nlep_sel).at(incl);
-
-
-  // auto l1pt_hist = hww.book<Histogram<1,float>>("l1pt",50,0,400).fill(l1pt);
-
   auto get_pt = hww.calculate([](TLV const& p4){return p4.Pt();});
   auto l1pt = get_pt(l1p4);
   auto l2pt = get_pt(l2p4);
@@ -127,15 +124,19 @@ int main(int argc, char* argv[]) {
 
   // auto pth_hists = hww.book<Histogram<1,float>>("pth",50,0,400).fill(pth).at(cut_2lsf,cut_2ldf, cut_2ldf_sr);
   // auto out_file = TFile::Open("hww_results.root","recreate");
-  // ana::output::dump<Folder>(pth_hists, *out_file, "hww");
+  // ana::output::dump<Folder>(pth_hists, *out_file, "ggf");
   // delete out_file;
 
-  auto pth_hists = hww.book<Histogram<1,float>>("pth",50,0,400).fill(pth).at(cut_2ldf);
-  auto pth_nom_hist = pth_hists.nominal().result();
-  auto pth_var_hist = pth_hists["lp4_up"].result();
-  pth_nom_hist->SetLineColor(kBlack); pth_nom_hist->Draw("hist");
-  pth_var_hist->SetLineColor(kRed); pth_var_hist->Draw("E same");
-  gPad->Print("pth_varied.pdf");
+  auto mll_vars = hww.book<Histogram<1,float>>("mll",50,0,100).fill(mll).at(cut_2los);
+  auto mll_nom = mll_vars.nominal().result();
+  auto mll_var = mll_vars["lp4_up"].result();
+  mll_nom->SetLineColor(kBlack); mll_nom->Draw("hist");
+  mll_var->SetLineColor(kRed); mll_var->Draw("E same");
+  gPad->Print("mll_varied.pdf");
+
+  // auto mll_vars_srs = hww.book<Histogram<1,float>>("mll",50,0,200).fill(mll).at(cut_2ldf, cut_2lsf);
+  // auto mll_nom_2ldf_sr = mll_vars.nominal()["2ldf/sr"].result();
+  // auto mll_var_2ldf_sr = mll_vars.["lp4_up"]["2lsf/sr"].result();
 
   return 0;
 }
