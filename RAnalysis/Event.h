@@ -74,13 +74,13 @@ public:
 	{}
 	~Container() = default;
 
-	virtual void execute() override
+	virtual T const& read() const override
 	{
-		const T* container(nullptr);
+		T const* container(nullptr);
     if (m_event->retrieve(container,this->m_containerName.c_str()).isFailure()) {
       throw std::runtime_error(TString::Format("failed to retrieve '%s' from event",this->m_containerName.c_str()));
     }
-    this->read(*container);
+    return *container;
 	}
 
 protected:

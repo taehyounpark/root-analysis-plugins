@@ -70,7 +70,7 @@ public:
 	{}
 	~Column() = default;
 
-	virtual const T& value() const override
+	virtual const T& read() const override
 	{
 		return static_cast<const T&>(**m_cursor);
 	}

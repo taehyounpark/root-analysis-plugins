@@ -77,9 +77,9 @@ public:
 		m_treeReaderValue = std::make_unique<TTreeReaderValue<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual void execute() override
+	virtual T const& read() const override
 	{
-		this->read(**m_treeReaderValue);
+		return **m_treeReaderValue;
 	}
 
 protected:
@@ -106,7 +106,7 @@ public:
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual void execute() override
+	virtual ROOT::RVec<T> const& read() const override
 	{
     if (auto arraySize = m_treeReaderArray->GetSize()) {
       ROOT::RVec<T> readArray(&m_treeReaderArray->At(0), arraySize);
@@ -115,7 +115,7 @@ public:
       ROOT::RVec<T> emptyVector{};
       std::swap(m_readArray,emptyVector);
     }
-		this->read(m_readArray);
+		return m_readArray;
 	}
 
 protected:
@@ -143,7 +143,7 @@ public:
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<bool>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual void execute() override
+	virtual ROOT::RVec<bool> const& read() const override
 	{
     if (m_treeReaderArray->GetSize()) {
       ROOT::RVec<bool> readArray(m_treeReaderArray->begin(), m_treeReaderArray->end());
@@ -152,7 +152,7 @@ public:
       ROOT::RVec<bool> emptyVector{};
       std::swap(m_readArray,emptyVector);
     }
-		this->read(m_readArray);
+		return m_readArray;
 	}
 
 protected:
