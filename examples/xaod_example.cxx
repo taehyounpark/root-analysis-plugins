@@ -75,14 +75,21 @@ int main() {
   using cut = ana::selection::cut;
   using weight = ana::selection::weight;
 
+
   auto mcEventWeight = ttbar.calculate([](const xAOD::EventInfo& eventInfo){return eventInfo.mcEventWeight();})(eventInfo);
   auto mcEventWeighted = ttbar.filter<weight>("mcEventWeight")(mcEventWeight);
+
+  auto whist = ttbar.book<Histogram<1,float>>("w",100,0,1000.0).fill(mcEventWeight).at(mcEventWeighted);
 
   auto selMuonsPtHist = ttbar.book<Histogram<1,RVecF>>("muons_pt",100,0,100).fill(selMuonsPt).at(mcEventWeighted);
 
   selMuonsPtHist->Draw();
   selMuonsPtHist.get_concurrent().get_slot(0)->get_result()->Draw("same");
   gPad->Print("muons_pt.pdf");
+
+  whist->Draw();
+  whist.get_concurrent().get_slot(0)->get_result()->Draw("same");
+  gPad->Print("weights.pdf");
 
   return 0;
 }
