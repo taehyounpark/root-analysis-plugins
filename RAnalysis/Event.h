@@ -90,7 +90,7 @@ protected:
 };
 
 template <typename U>
-std::shared_ptr<Event::Container<U>> Event::Loop::read(const ana::input::range&, const std::string& branchName) const
+std::shared_ptr<Event::Container<U>> Event::Loop::read(const ana::input::range&, const std::string& containerName) const
 {
 	return std::make_shared<Container<U>>(containerName,*m_event);
 }

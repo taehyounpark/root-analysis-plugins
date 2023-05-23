@@ -67,7 +67,7 @@ std::shared_ptr<Event::Loop> Event::read() const
 	return std::make_shared<Loop>(tree.release());
 }
 
-Event::Loop::Loop(const ana::input::range& part, TTree* tree)
+Event::Loop::Loop(TTree* tree)
 {
 	m_event = std::make_unique<xAOD::TEvent>();
   if (m_event->readFrom(tree).isFailure()) {
