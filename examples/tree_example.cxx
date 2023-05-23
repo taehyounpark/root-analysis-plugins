@@ -128,15 +128,17 @@ int main(int argc, char* argv[]) {
   // delete out_file;
 
   auto mll_vars = hww.book<Histogram<1,float>>("mll",50,0,100).fill(mll).at(cut_2los);
-  auto mll_nom = mll_vars.nominal().result();
-  auto mll_var = mll_vars["lp4_up"].result();
+  // auto mll_nom = mll_vars.get_nominal().get_result();
+  // auto mll_var = mll_vars["lp4_up"].get_result();
+  auto mll_nom = mll_vars.get_nominal();
+  auto mll_var = mll_vars["lp4_up"];
   mll_nom->SetLineColor(kBlack); mll_nom->Draw("hist");
   mll_var->SetLineColor(kRed); mll_var->Draw("E same");
   gPad->Print("mll_varied.pdf");
 
   // auto mll_vars_srs = hww.book<Histogram<1,float>>("mll",50,0,200).fill(mll).at(cut_2ldf, cut_2lsf);
-  // auto mll_nom_2ldf_sr = mll_vars.nominal()["2ldf/sr"].result();
-  // auto mll_var_2ldf_sr = mll_vars.["lp4_up"]["2lsf/sr"].result();
+  // auto mll_nom_2ldf_sr = mll_vars.get_nominal()["2ldf/sr"].get_result();
+  // auto mll_var_2ldf_sr = mll_vars.["lp4_up"]["2lsf/sr"].get_result();
 
   return 0;
 }

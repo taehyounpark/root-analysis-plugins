@@ -28,10 +28,10 @@ public:
 	~RDS() = default;
 
 	ana::input::partition allocate();
-	std::shared_ptr<Reader> open(const ana::input::range& part) const;
+	std::shared_ptr<Reader> read() const;
 
-	virtual void start() override;
-	virtual void finish() override;
+	void start();
+	void finish();
 
 protected:
   std::unique_ptr<RDataSource> m_rds;
@@ -43,15 +43,15 @@ class RDS::Reader : public ana::input::reader<Reader>
 {
 
 public:
-	Reader(const ana::input::range& part, RDataSource& rds);
+	Reader(RDataSource& rds);
 	~Reader() = default;
 
 	template <typename T>
-	std::shared_ptr<Column<T>> read(const std::string& name) const;
+	std::shared_ptr<Column<T>> read(const ana::input::range& part, const std::string& name) const;
 
-	virtual void begin() override;
-	virtual bool next() override;
-	virtual void end() override;
+ 	void start(const ana::input::range& part);
+	void next(const ana::input::range& part, unsigned long long entry);
+ 	void finish(const ana::input::range& part);
 
 protected:
   RDataSource* m_rds;
@@ -81,8 +81,8 @@ protected:
 };
 
 template <typename T>
-std::shared_ptr<RDS::Column<T>> RDS::Reader::read(const std::string& name) const
+std::shared_ptr<RDS::Column<T>> RDS::Reader::read(const ana::input::range& part, const std::string& name) const
 {
   auto columnReaders = m_rds->GetColumnReaders<T>(name.c_str());
-	return std::make_shared<Column<T>>(name,columnReaders[m_part.slot]);
+	return std::make_shared<Column<T>>(name,columnReaders[part.slot]);
 }

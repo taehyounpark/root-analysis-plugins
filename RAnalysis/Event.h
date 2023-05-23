@@ -32,7 +32,7 @@ public:
 
 	ana::input::partition allocate();
 	double normalize() const;
-	std::shared_ptr<Loop> open(const ana::input::range& part) const;
+	std::shared_ptr<Loop> read() const;
 
 protected:
 	std::vector<std::string> m_inputFiles;
@@ -45,14 +45,15 @@ protected:
 class Event::Loop : public ana::input::reader<Loop>
 {
 public:
-	Loop(const ana::input::range& part, TTree* tree);
+	Loop(TTree* tree);
 	~Loop() = default;
 
 	template <typename U>
-	std::shared_ptr<Container<U>> read(std::string containerName) const;
+	std::shared_ptr<Container<U>> read(const ana::input::range& part, const std::string& name) const;
 
-	virtual void begin() override;
-	virtual bool next() override;
+ 	void start(const ana::input::range& part);
+	void next(const ana::input::range& part, unsigned long long entry);
+ 	void finish(const ana::input::range& part);
 
 protected:
   std::unique_ptr<xAOD::TEvent> m_event;
@@ -89,7 +90,7 @@ protected:
 };
 
 template <typename U>
-std::shared_ptr<Event::Container<U>> Event::Loop::read(std::string containerName) const
+std::shared_ptr<Event::Container<U>> Event::Loop::read(const ana::input::range&, const std::string& branchName) const
 {
 	return std::make_shared<Container<U>>(containerName,*m_event);
 }

@@ -5,8 +5,8 @@ import ROOT
 ana = ROOT.ana
 
 ana.multithread.enable(2)
-hww = ana.analysis['Tree']()
-hww.open( ['hww.root'], 'mini' )
+hww = ana.analysis['Tree']( ['hww.root'], 'mini' )
+# hww.open( ['hww.root'], 'mini' )
 
 mc_weight = hww.read['float']("mcWeight")
 el_sf = hww.read['float']("scaleFactor_ELE")
@@ -23,9 +23,10 @@ met_phi = hww.read['float']("met_phi")
 
 print(mc_weight)
 
-weighted = hww.filter['ana::selection::cut']("mcWeight").apply(mc_weight)
+mc_weighted = hww.filter['ana::selection::cut']("mcWeight")
+mc_weighted = hww.evaluate_selection(mc_weighted,mc_weight)
 
-print(weighted)
+print(mc_weighted)
 
 # lep_pt_hist = hww.book['Histogram<1,float>']("lep_pt",100,0,200).fill(lep_pt_MeV)
 

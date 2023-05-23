@@ -32,7 +32,7 @@ public:
 	~Tree() = default;
 
  	ana::input::partition allocate();
-	std::shared_ptr<Reader> open(const ana::input::range& part) const;
+	std::shared_ptr<Reader> read() const;
 
 protected:
 	std::vector<std::string> m_allFiles;
@@ -44,14 +44,15 @@ protected:
 class Tree::Reader : public ana::input::reader<Reader>
 {
 public:
-	Reader(const ana::input::range& part, std::unique_ptr<TTree> tree);
+	Reader(std::unique_ptr<TTree> tree);
 	~Reader() = default;
 
 	template <typename U>
-	std::shared_ptr<Branch<U>> read(const std::string& branchName) const;
+	std::shared_ptr<Branch<U>> read(const ana::input::range&, const std::string& branchName) const;
 
-	virtual void begin() override;
-	virtual bool next() override;
+ 	void start(const ana::input::range& part);
+	void next(const ana::input::range& part, unsigned long long entry);
+ 	void finish(const ana::input::range& part);
 
 protected:
 	std::unique_ptr<TTree>       m_tree; 
@@ -164,7 +165,7 @@ protected:
 
 
 template <typename U>
-std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const std::string& branchName) const
+std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const ana::input::range&, const std::string& branchName) const
 {
 	return std::make_shared<Branch<U>>(branchName,*m_treeReader);
 }

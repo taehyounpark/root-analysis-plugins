@@ -150,9 +150,8 @@ template <typename Prec>
 std::shared_ptr<TH1> Histogram<1,Prec>::merge(std::vector<std::shared_ptr<TH1>> results) const
 {
 	auto merged_result = std::shared_ptr<TH1>(static_cast<TH1*>(results[0]->Clone()));
-	merged_result->Reset();
-	for (auto const& result : results) {
-		merged_result->Add(result.get());
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
 	}
 	return merged_result;
 }
@@ -181,9 +180,8 @@ template <typename Prec>
 std::shared_ptr<TH2> Histogram<2,Prec>::merge(std::vector<std::shared_ptr<TH2>> results) const
 {
 	auto merged_result = std::shared_ptr<TH2>(static_cast<TH2*>(results[0]->Clone()));
-	merged_result->Reset();
-	for (auto const& result : results) {
-		merged_result->Add(result.get());
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
 	}
 	return merged_result;
 }
@@ -212,9 +210,8 @@ template <typename Prec>
 std::shared_ptr<TH3> Histogram<3,Prec>::merge(std::vector<std::shared_ptr<TH3>> results) const
 {
 	auto merged_result = std::shared_ptr<TH3>(static_cast<TH3*>(results[0]->Clone()));
-	merged_result->Reset();
-	for (auto const& result : results) {
-		merged_result->Add(result.get());
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
 	}
 	return merged_result;
 }
@@ -255,9 +252,8 @@ template <typename Prec>
 std::shared_ptr<TH1> Histogram<1,ROOT::RVec<Prec>>::merge(std::vector<std::shared_ptr<TH1>> results) const
 {
 	auto merged_result = std::shared_ptr<TH1>(static_cast<TH1*>(results[0]->Clone()));
-	merged_result->Reset();
-	for (auto const& result : results) {
-		merged_result->Add(result.get());
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
 	}
 	return merged_result;
 }
@@ -291,9 +287,8 @@ template <typename Prec>
 std::shared_ptr<TH2> Histogram<2,ROOT::RVec<Prec>>::merge(std::vector<std::shared_ptr<TH2>> results) const
 {
 	auto merged_result = std::shared_ptr<TH2>(static_cast<TH2*>(results[0]->Clone()));
-	merged_result->Reset();
-	for (auto const& result : results) {
-		merged_result->Add(result.get());
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
 	}
 	return merged_result;
 }
@@ -330,9 +325,8 @@ template <typename Prec>
 std::shared_ptr<TH3> Histogram<3,ROOT::RVec<Prec>>::merge(std::vector<std::shared_ptr<TH3>> results) const
 {
 	auto merged_result = std::shared_ptr<TH3>(static_cast<TH3*>(results[0]->Clone()));
-	merged_result->Reset();
-	for (auto const& result : results) {
-		merged_result->Add(result.get());
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
 	}
 	return merged_result;
 }

@@ -40,31 +40,26 @@ void RDS::finish()
   m_rds->Finalise();
 }
 
-std::shared_ptr<RDS::Reader> RDS::open(const ana::input::range& part) const
+std::shared_ptr<RDS::Reader> RDS::read() const
 {
-	return std::make_shared<Reader>(part, *m_rds);
+	return std::make_shared<Reader>(*m_rds);
 }
 
-RDS::Reader::Reader(const ana::input::range& part, RDataSource& rds) :
-  ana::input::reader<Reader>(part),
+RDS::Reader::Reader(RDataSource& rds) :
   m_rds(&rds)
 {}
 
-void RDS::Reader::begin()
+void RDS::Reader::start(const ana::input::range& part)
 {
-  m_rds->InitSlot(m_part.slot, m_part.begin);
-	m_current = m_part.begin;
+  m_rds->InitSlot(part.slot, part.begin);
 }
 
-bool RDS::Reader::next()
+void RDS::Reader::next(const ana::input::range& part, unsigned long long entry)
 {
-  if (m_current < m_part.end) {
-    return m_rds->SetEntry(m_part.slot, m_current++);
-  }
-  return false;
+  m_rds->SetEntry(part.slot, entry);
 }
 
-void RDS::Reader::end()
+void RDS::Reader::finish(const ana::input::range& part)
 {
-  m_rds->FinaliseSlot(m_part.slot);
+  m_rds->FinaliseSlot(part.slot);
 }

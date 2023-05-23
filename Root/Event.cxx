@@ -57,18 +57,17 @@ ana::input::partition Event::allocate()
 	return parts;
 }
 
-std::shared_ptr<Event::Loop> Event::open(const ana::input::range& part) const 
+std::shared_ptr<Event::Loop> Event::read() const 
 {
 	auto tree = std::make_unique<TChain>(m_treeName.c_str(),m_treeName.c_str());
 	for (auto const& filePath : m_goodFiles) {
 		tree->Add(filePath.c_str());
 	}
 	tree->ResetBit(kMustCleanup);
-	return std::make_shared<Loop>(part, tree.release());
+	return std::make_shared<Loop>(tree.release());
 }
 
-Event::Loop::Loop(const ana::input::range& part, TTree* tree) :
-	ana::input::reader<Loop>(part)
+Event::Loop::Loop(const ana::input::range& part, TTree* tree)
 {
 	m_event = std::make_unique<xAOD::TEvent>();
   if (m_event->readFrom(tree).isFailure()) {
@@ -76,19 +75,19 @@ Event::Loop::Loop(const ana::input::range& part, TTree* tree) :
 	};
 }
 
-void Event::Loop::begin()
+void Event::Loop::start(const ana::input::range&)
 {
-	m_current = m_part.begin;
-	m_end = m_part.end;
+	// nothing to do
 }
 
-bool Event::Loop::next()
+void Event::Loop::next(const ana::input::range&, unsigned long long entry)
 {
-	if (m_current < m_end) {
-    if (m_event->getEntry(m_current++)<0) {
-			throw std::runtime_error("failed to get entry");
-		} 
-		return true;
-  }
-  return false;
+	if (m_event->getEntry(entry)<0) {
+		throw std::runtime_error("failed to get entry");
+	} 
+}
+
+void Event::Loop::finish(const ana::input::range&)
+{
+	// nothing to do
 }
