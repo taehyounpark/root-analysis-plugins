@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <sstream>
+#include <functional>
 
 #include <ROOT/RVec.hxx>
 #include "TPad.h"
@@ -55,6 +56,7 @@ int main(int argc, char* argv[]) {
   ana::analysis<Tree> hww( {"hww.root"}, "mini" );
 
   auto mc_weight = hww.read<float>("mcWeight");
+  // auto el_sf = hww.read<float>("scaleFactor_ELE").vary("sf_var","scaleFactor_PILEUP");
   auto el_sf = hww.read<float>("scaleFactor_ELE").vary("sf_var","scaleFactor_PILEUP");
   auto mu_sf = hww.read<float>("scaleFactor_MUON");
 
@@ -77,7 +79,8 @@ int main(int argc, char* argv[]) {
 
   auto lep_eta_max = hww.constant(2.4);
 
-  auto Escale = hww.calculate([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
+  // auto Escale = hww.calculate([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
+  auto Escale = hww.calculate([](RVecD E){return E;});
   auto lep_pt_sel = Escale(lep_pt)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_E_sel = Escale(lep_E)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto nlep_sel = hww.calculate([](RVecD const& lep){return lep.size();})(lep_pt_sel);
@@ -100,7 +103,7 @@ int main(int argc, char* argv[]) {
   using cut = ana::selection::cut;
   using weight = ana::selection::weight;
 
-  auto incl = hww.filter<weight>("incl").apply(mc_weight * el_sf * mu_sf);
+  auto incl = hww.filter<weight>("incl").evaluate(mc_weight * el_sf * mu_sf);
 
   auto nlep_req = hww.constant(2);
   auto cut_2los = incl.filter<cut>("2l")(nlep_sel == nlep_req).filter<cut>("2los", [](const RVecF& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
