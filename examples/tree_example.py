@@ -2,7 +2,8 @@ import os
 import numpy as np
 
 import ROOT
-ana = ROOT.ana
+from ROOT import ana
+# ana = ROOT.ana
 
 ana.multithread.enable(2)
 hww = ana.analysis['Tree']( ['hww.root'], 'mini' )
@@ -53,7 +54,8 @@ protected:
 
 };
 
-auto test_fn = std::function{[](int x){return x;}};
+double _test_fn(double x) { return x; }
+auto test_fn = std::function{_test_fn};
 ''')
 
 l1p4 = hww.define['NthP4'](0)
@@ -64,19 +66,24 @@ print(l1p4)
 lep_pt_GeV = hww.constant(10) + hww.constant(1000.0)
 print(lep_pt_GeV)
 
-print(type(ROOT.test_fn))
-print(hww.calculate[type(ROOT.test_fn)](ROOT.test_fn))
+print(ROOT.test_fn)
 
-mc_weighted = hww.filter['ana::selection::cut']("mcWeight")
-print(mc_weighted)
-mc_weighted = mc_weighted.evaluate(mc_weight)
-print(mc_weighted)
+fn = hww.define(ROOT.test_fn)
+print(fn)
+
+fn = fn.evaluate(hww.constant(1))
+print(fn)
+
+# mc_weighted = hww.filter['ana::selection::cut']("mcWeight")
+# print(mc_weighted)
+# mc_weighted = mc_weighted.evaluate(mc_weight)
+# print(mc_weighted)
 
 
-hist = hww.book['Histogram<1,float>']('pt',100,0,100)
-booked = hist.at(mc_weighted)
+# hist = hww.book['Histogram<1,float>']('pt',100,0,100)
+# booked = hist.at(mc_weighted)
 
-print(hist)
+# print(hist)
 
 # lep_pt_hist = hww.book['Histogram<1,float>']("lep_pt",100,0,200).fill(lep_pt_MeV)
 

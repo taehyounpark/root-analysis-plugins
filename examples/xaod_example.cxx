@@ -61,7 +61,7 @@ int main() {
   };
 
   auto selMuons = ttbar.define<MuonSelection>(1.5)(allMuons);
-  auto selMuonsPtMeV = ttbar.calculate(
+  auto selMuonsPtMeV = ttbar.define(
     [](ConstDataVector<xAOD::MuonContainer> const& muons){
       RVecD pts;
       for( const xAOD::Muon* mu : muons ) {
@@ -76,7 +76,7 @@ int main() {
   using weight = ana::selection::weight;
 
 
-  auto mcEventWeight = ttbar.calculate([](const xAOD::EventInfo& eventInfo){return eventInfo.mcEventWeight();})(eventInfo);
+  auto mcEventWeight = ttbar.define([](const xAOD::EventInfo& eventInfo){return eventInfo.mcEventWeight();})(eventInfo);
   auto mcEventWeighted = ttbar.filter<weight>("mcEventWeight")(mcEventWeight);
 
   auto whist = ttbar.book<Histogram<1,float>>("w",100,0,1000.0).fill(mcEventWeight).at(mcEventWeighted);

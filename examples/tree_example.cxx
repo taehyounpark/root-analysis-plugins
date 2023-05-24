@@ -79,11 +79,11 @@ int main(int argc, char* argv[]) {
 
   auto lep_eta_max = hww.constant(2.4);
 
-  // auto Escale = hww.calculate([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
-  auto Escale = hww.calculate([](RVecD E){return E;});
+  auto Escale = hww.define([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
+  // auto Escale = hww.define([](RVecD E){return E;});
   auto lep_pt_sel = Escale(lep_pt)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_E_sel = Escale(lep_E)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto nlep_sel = hww.calculate([](RVecD const& lep){return lep.size();})(lep_pt_sel);
+  auto nlep_sel = hww.define([](RVecD const& lep){return lep.size();})(lep_pt_sel);
 
   auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_phi_sel = lep_phi[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
@@ -92,8 +92,8 @@ int main(int argc, char* argv[]) {
   auto l2p4 = hww.define<NthP4>(1)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
 
   auto llp4 = l1p4+l2p4;
-  auto mll = hww.calculate([](const TLV& p4){return p4.M();})(llp4);
-  auto pth = hww.calculate(
+  auto mll = hww.define([](const TLV& p4){return p4.M();})(llp4);
+  auto pth = hww.define(
     [](const TLV& p4, float q, float q_phi) {
       TVector2 p2; p2.SetMagPhi(p4.Pt(), p4.Phi());
       TVector2 q2; q2.SetMagPhi(q, q_phi);
@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
   auto pth_2ldf_sr = pth_hist.at(cut_2ldf_sr);
   auto pth_2ldf_cr = pth_hist.at(cut_2ldf_cr);
 
-  auto get_pt = hww.calculate([](TLV const& p4){return p4.Pt();});
+  auto get_pt = hww.define([](TLV const& p4){return p4.Pt();});
   auto l1pt = get_pt(l1p4);
   auto l2pt = get_pt(l2p4);
   auto l1n2pt_hists = hww.book<Histogram<1,float>>(std::string("l1n2pt"),50,0,200).fill(l1pt).fill(l2pt).at(cut_2los, cut_2lsf, cut_2ldf);
