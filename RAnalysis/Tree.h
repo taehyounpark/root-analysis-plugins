@@ -32,7 +32,7 @@ public:
 	~Tree() = default;
 
  	ana::input::partition allocate();
-	std::shared_ptr<Reader> open(const ana::input::range& part) const;
+	std::shared_ptr<Reader> read() const;
 
 protected:
 	std::vector<std::string> m_allFiles;
@@ -44,14 +44,15 @@ protected:
 class Tree::Reader : public ana::input::reader<Reader>
 {
 public:
-	Reader(const ana::input::range& part, std::unique_ptr<TTree> tree);
+	Reader(std::unique_ptr<TTree> tree);
 	~Reader() = default;
 
 	template <typename U>
-	std::shared_ptr<Branch<U>> read(const std::string& branchName) const;
+	std::shared_ptr<Branch<U>> read(const ana::input::range&, const std::string& branchName) const;
 
-	virtual void begin() override;
-	virtual bool next() override;
+ 	void start(const ana::input::range& part);
+	void next(const ana::input::range& part, unsigned long long entry);
+ 	void finish(const ana::input::range& part);
 
 protected:
 	std::unique_ptr<TTree>       m_tree; 
@@ -76,9 +77,9 @@ public:
 		m_treeReaderValue = std::make_unique<TTreeReaderValue<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual void execute() override
+	virtual T const& read() const override
 	{
-		this->read(**m_treeReaderValue);
+		return **m_treeReaderValue;
 	}
 
 protected:
@@ -105,7 +106,7 @@ public:
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual void execute() override
+	virtual ROOT::RVec<T> const& read() const override
 	{
     if (auto arraySize = m_treeReaderArray->GetSize()) {
       ROOT::RVec<T> readArray(&m_treeReaderArray->At(0), arraySize);
@@ -114,7 +115,7 @@ public:
       ROOT::RVec<T> emptyVector{};
       std::swap(m_readArray,emptyVector);
     }
-		this->read(m_readArray);
+		return m_readArray;
 	}
 
 protected:
@@ -142,7 +143,7 @@ public:
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<bool>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual void execute() override
+	virtual ROOT::RVec<bool> const& read() const override
 	{
     if (m_treeReaderArray->GetSize()) {
       ROOT::RVec<bool> readArray(m_treeReaderArray->begin(), m_treeReaderArray->end());
@@ -151,7 +152,7 @@ public:
       ROOT::RVec<bool> emptyVector{};
       std::swap(m_readArray,emptyVector);
     }
-		this->read(m_readArray);
+		return m_readArray;
 	}
 
 protected:
@@ -164,7 +165,7 @@ protected:
 
 
 template <typename U>
-std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const std::string& branchName) const
+std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const ana::input::range&, const std::string& branchName) const
 {
 	return std::make_shared<Branch<U>>(branchName,*m_treeReader);
 }

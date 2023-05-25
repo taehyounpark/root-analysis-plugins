@@ -29,10 +29,18 @@ using TLV = TLorentzVector;
 
 int main() {
 
-  auto ttbar = ana::analysis<Event>({"/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/ASG/DAOD_PHYS/p5169/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13167_p5169/DAOD_PHYS.29445530._000001.pool.root.1"},"CollectionTree");
+  ana::multithread::enable(2);
+
+  auto ttbar = ana::analysis<Event>({
+    "/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/ASG/DAOD_PHYS/p5169/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13167_p5169/DAOD_PHYS.29445530._000001.pool.root.1",
+    "/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/ASG/DAOD_PHYS/p5169/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_a899_r13167_p5169/DAOD_PHYS.29445540._000002.pool.root.1"
+    },"CollectionTree");
+
 
   auto allMuons = ttbar.read<xAOD::MuonContainer>("Muons");
   auto eventInfo = ttbar.read<xAOD::EventInfo>("EventInfo");
+
+  std::cout << allMuons.concurrency() << std::endl;
 
   class MuonSelection : public ana::column::definition<ConstDataVector<xAOD::MuonContainer>(xAOD::MuonContainer)>
   {
@@ -53,7 +61,7 @@ int main() {
   };
 
   auto selMuons = ttbar.define<MuonSelection>(1.5)(allMuons);
-  auto selMuonsPtMeV = ttbar.calculate(
+  auto selMuonsPtMeV = ttbar.define(
     [](ConstDataVector<xAOD::MuonContainer> const& muons){
       RVecD pts;
       for( const xAOD::Muon* mu : muons ) {
@@ -67,13 +75,25 @@ int main() {
   using cut = ana::selection::cut;
   using weight = ana::selection::weight;
 
-  auto mcEventWeight = ttbar.calculate([](const xAOD::EventInfo& eventInfo){return eventInfo.mcEventWeight();})(eventInfo);
+
+  auto mcEventWeight = ttbar.define([](const xAOD::EventInfo& eventInfo){return eventInfo.mcEventWeight();})(eventInfo);
   auto mcEventWeighted = ttbar.filter<weight>("mcEventWeight")(mcEventWeight);
+
+  auto whist = ttbar.book<Histogram<1,float>>("w",100,0,1000.0).fill(mcEventWeight).at(mcEventWeighted);
 
   auto selMuonsPtHist = ttbar.book<Histogram<1,RVecF>>("muons_pt",100,0,100).fill(selMuonsPt).at(mcEventWeighted);
 
-  selMuonsPtHist.result()->Draw();
+  selMuonsPtHist->Draw();
+  selMuonsPtHist.get_slot(0)->get_result()->Draw("same");
   gPad->Print("muons_pt.pdf");
+
+  std::cout << selMuonsPtHist.get_result()->GetEntries() << std::endl;
+  std::cout << selMuonsPtHist.get_slot(0)->get_result()->GetEntries() << std::endl;
+  std::cout << selMuonsPtHist.get_slot(1)->get_result()->GetEntries() << std::endl;
+
+  whist->Draw();
+  whist.get_slot(0)->get_result()->Draw("same");
+  gPad->Print("weights.pdf");
 
   return 0;
 }

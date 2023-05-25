@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <sstream>
+#include <functional>
 
 #include <ROOT/RVec.hxx>
 #include "TPad.h"
@@ -55,6 +56,7 @@ int main(int argc, char* argv[]) {
   ana::analysis<Tree> hww( {"hww.root"}, "mini" );
 
   auto mc_weight = hww.read<float>("mcWeight");
+  // auto el_sf = hww.read<float>("scaleFactor_ELE").vary("sf_var","scaleFactor_PILEUP");
   auto el_sf = hww.read<float>("scaleFactor_ELE").vary("sf_var","scaleFactor_PILEUP");
   auto mu_sf = hww.read<float>("scaleFactor_MUON");
 
@@ -77,10 +79,11 @@ int main(int argc, char* argv[]) {
 
   auto lep_eta_max = hww.constant(2.4);
 
-  auto Escale = hww.calculate([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
+  auto Escale = hww.define([](RVecD E){return E;}).vary("lp4_up",[](RVecD E){return E*1.01;}).vary("lp4_dn",[](RVecD E){return E*0.99;});
+  // auto Escale = hww.define([](RVecD E){return E;});
   auto lep_pt_sel = Escale(lep_pt)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_E_sel = Escale(lep_E)[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
-  auto nlep_sel = hww.calculate([](RVecD const& lep){return lep.size();})(lep_pt_sel);
+  auto nlep_sel = hww.define([](RVecD const& lep){return lep.size();})(lep_pt_sel);
 
   auto lep_eta_sel = lep_eta[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
   auto lep_phi_sel = lep_phi[ lep_eta < lep_eta_max && lep_eta > (-lep_eta_max) ];
@@ -89,8 +92,8 @@ int main(int argc, char* argv[]) {
   auto l2p4 = hww.define<NthP4>(1)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
 
   auto llp4 = l1p4+l2p4;
-  auto mll = hww.calculate([](const TLV& p4){return p4.M();})(llp4);
-  auto pth = hww.calculate(
+  auto mll = hww.define([](const TLV& p4){return p4.M();})(llp4);
+  auto pth = hww.define(
     [](const TLV& p4, float q, float q_phi) {
       TVector2 p2; p2.SetMagPhi(p4.Pt(), p4.Phi());
       TVector2 q2; q2.SetMagPhi(q, q_phi);
@@ -100,7 +103,7 @@ int main(int argc, char* argv[]) {
   using cut = ana::selection::cut;
   using weight = ana::selection::weight;
 
-  auto incl = hww.filter<weight>("incl").apply(mc_weight * el_sf * mu_sf);
+  auto incl = hww.filter<weight>("incl").evaluate(mc_weight * el_sf * mu_sf);
 
   auto nlep_req = hww.constant(2);
   auto cut_2los = incl.filter<cut>("2l")(nlep_sel == nlep_req).filter<cut>("2los", [](const RVecF& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
@@ -117,7 +120,7 @@ int main(int argc, char* argv[]) {
   auto pth_2ldf_sr = pth_hist.at(cut_2ldf_sr);
   auto pth_2ldf_cr = pth_hist.at(cut_2ldf_cr);
 
-  auto get_pt = hww.calculate([](TLV const& p4){return p4.Pt();});
+  auto get_pt = hww.define([](TLV const& p4){return p4.Pt();});
   auto l1pt = get_pt(l1p4);
   auto l2pt = get_pt(l2p4);
   auto l1n2pt_hists = hww.book<Histogram<1,float>>(std::string("l1n2pt"),50,0,200).fill(l1pt).fill(l2pt).at(cut_2los, cut_2lsf, cut_2ldf);
@@ -128,15 +131,17 @@ int main(int argc, char* argv[]) {
   // delete out_file;
 
   auto mll_vars = hww.book<Histogram<1,float>>("mll",50,0,100).fill(mll).at(cut_2los);
-  auto mll_nom = mll_vars.nominal().result();
-  auto mll_var = mll_vars["lp4_up"].result();
+  // auto mll_nom = mll_vars.get_nominal().get_result();
+  // auto mll_var = mll_vars["lp4_up"].get_result();
+  auto mll_nom = mll_vars.get_nominal();
+  auto mll_var = mll_vars["lp4_up"];
   mll_nom->SetLineColor(kBlack); mll_nom->Draw("hist");
   mll_var->SetLineColor(kRed); mll_var->Draw("E same");
   gPad->Print("mll_varied.pdf");
 
   // auto mll_vars_srs = hww.book<Histogram<1,float>>("mll",50,0,200).fill(mll).at(cut_2ldf, cut_2lsf);
-  // auto mll_nom_2ldf_sr = mll_vars.nominal()["2ldf/sr"].result();
-  // auto mll_var_2ldf_sr = mll_vars.["lp4_up"]["2lsf/sr"].result();
+  // auto mll_nom_2ldf_sr = mll_vars.get_nominal()["2ldf/sr"].get_result();
+  // auto mll_var_2ldf_sr = mll_vars.["lp4_up"]["2lsf/sr"].get_result();
 
   return 0;
 }

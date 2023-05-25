@@ -25,7 +25,7 @@ public:
 
 	virtual void fill(ana::observable<Prec>, double) override;
 	virtual std::shared_ptr<TH1> result() const override;
-	virtual void merge(std::shared_ptr<TH1> hist) override;
+	virtual std::shared_ptr<TH1> merge(std::vector<std::shared_ptr<TH1>> results) const override;
 
 protected:
 	// histogram
@@ -43,7 +43,7 @@ public:
 
 	virtual void fill(ana::observable<Prec>, ana::observable<Prec>, double) override;
 	virtual std::shared_ptr<TH2> result() const override;
-	virtual void merge(std::shared_ptr<TH2> hist) override;
+	virtual std::shared_ptr<TH2> merge(std::vector<std::shared_ptr<TH2>> results) const override;
 
 protected:
 	std::shared_ptr<TH2> m_hist; //!
@@ -60,7 +60,7 @@ public:
 
 	virtual void fill(ana::observable<Prec>, ana::observable<Prec>, ana::observable<Prec>, double) override;
 	virtual std::shared_ptr<TH3> result() const override;
-	virtual void merge(std::shared_ptr<TH3> hist) override;
+	virtual std::shared_ptr<TH3> merge(std::vector<std::shared_ptr<TH3>> results) const override;
 
 protected:
 	std::shared_ptr<TH3> m_hist; //!
@@ -78,7 +78,7 @@ public:
 
 	virtual void fill(ana::observable<ROOT::RVec<Prec>>, double) override;
 	virtual std::shared_ptr<TH1> result() const override;
-	virtual void merge(std::shared_ptr<TH1> hist) override;
+	virtual std::shared_ptr<TH1> merge(std::vector<std::shared_ptr<TH1>> results) const override;
 
 protected:
 	// histogram
@@ -96,7 +96,7 @@ public:
 
 	virtual void fill(ana::observable<ROOT::RVec<Prec>>, ana::observable<ROOT::RVec<Prec>>, double) override;
 	virtual std::shared_ptr<TH2> result() const override;
-	virtual void merge(std::shared_ptr<TH2> hist) override;
+	virtual std::shared_ptr<TH2> merge(std::vector<std::shared_ptr<TH2>> results) const override;
 
 protected:
 	// histogram
@@ -114,7 +114,7 @@ public:
 
 	virtual void fill(ana::observable<ROOT::RVec<Prec>>, ana::observable<ROOT::RVec<Prec>>, ana::observable<ROOT::RVec<Prec>>, double) override;
 	virtual std::shared_ptr<TH3> result() const override;
-	virtual void merge(std::shared_ptr<TH3> hist) override;
+	virtual std::shared_ptr<TH3> merge(std::vector<std::shared_ptr<TH3>> results) const override;
 
 protected:
 	// histogram
@@ -147,15 +147,19 @@ void Histogram<1,Prec>::fill(ana::observable<Prec> x, double w)
 }
 
 template <typename Prec>
-void Histogram<1,Prec>::merge(std::shared_ptr<TH1> hist)
+std::shared_ptr<TH1> Histogram<1,Prec>::merge(std::vector<std::shared_ptr<TH1>> results) const
 {
-	m_hist->Add(hist.get());
+	auto merged_result = std::shared_ptr<TH1>(static_cast<TH1*>(results[0]->Clone()));
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
+	}
+	return merged_result;
 }
 
 template <typename Prec>
 std::shared_ptr<TH1> Histogram<1,Prec>::result() const
 {
-	return m_hist; //!
+	return m_hist;
 }
 
 template <typename Prec>
@@ -173,15 +177,19 @@ void Histogram<2,Prec>::fill(ana::observable<Prec> x, ana::observable<Prec> y, d
 }
 
 template <typename Prec>
-void Histogram<2,Prec>::merge(std::shared_ptr<TH2> hist)
+std::shared_ptr<TH2> Histogram<2,Prec>::merge(std::vector<std::shared_ptr<TH2>> results) const
 {
-	m_hist->Add(hist.get());
+	auto merged_result = std::shared_ptr<TH2>(static_cast<TH2*>(results[0]->Clone()));
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
+	}
+	return merged_result;
 }
 
 template <typename Prec>
 std::shared_ptr<TH2> Histogram<2,Prec>::result() const
 {
-	return m_hist; //!
+	return m_hist;
 }
 
 template <typename Prec>
@@ -199,15 +207,19 @@ void Histogram<3,Prec>::fill(ana::observable<Prec> x, ana::observable<Prec> y, a
 }
 
 template <typename Prec>
-void Histogram<3,Prec>::merge(std::shared_ptr<TH3> hist)
+std::shared_ptr<TH3> Histogram<3,Prec>::merge(std::vector<std::shared_ptr<TH3>> results) const
 {
-	m_hist->Add(hist.get());
+	auto merged_result = std::shared_ptr<TH3>(static_cast<TH3*>(results[0]->Clone()));
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
+	}
+	return merged_result;
 }
 
 template <typename Prec>
 std::shared_ptr<TH3> Histogram<3,Prec>::result() const
 {
-	return m_hist; //!
+	return m_hist;
 }
 
 // vector<T>
@@ -231,21 +243,25 @@ Histogram<1,ROOT::RVec<Prec>>::Histogram(const std::string& name, const std::vec
 template <typename Prec>
 void Histogram<1,ROOT::RVec<Prec>>::fill(ana::observable<ROOT::RVec<Prec>> xs, double w)
 {
-	for (size_t ix ; ix<xs->size() ; ++ix) {
+	for (size_t ix=0; ix<xs->size() ; ++ix) {
 		m_hist->Fill(xs.value()[ix],w);
 	}
 }
 
 template <typename Prec>
-void Histogram<1,ROOT::RVec<Prec>>::merge(std::shared_ptr<TH1> hist)
+std::shared_ptr<TH1> Histogram<1,ROOT::RVec<Prec>>::merge(std::vector<std::shared_ptr<TH1>> results) const
 {
-	m_hist->Add(hist.get());
+	auto merged_result = std::shared_ptr<TH1>(static_cast<TH1*>(results[0]->Clone()));
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
+	}
+	return merged_result;
 }
 
 template <typename Prec>
 std::shared_ptr<TH1> Histogram<1,ROOT::RVec<Prec>>::result() const
 {
-	return m_hist; //!
+	return m_hist;
 }
 
 template <typename Prec>
@@ -262,21 +278,25 @@ void Histogram<2,ROOT::RVec<Prec>>::fill(ana::observable<ROOT::RVec<Prec>> xs, a
 	if (xs->size() != ys->size()) {
 		throw std::runtime_error("x- and y-arrays do not share the same size");
 	}
-	for (size_t ix ; ix<xs->size() ; ++ix) {
+	for (size_t ix=0; ix<xs->size() ; ++ix) {
 		m_hist->Fill(xs.value()[ix],ys.value()[ix],w);
 	}
 }
 
 template <typename Prec>
-void Histogram<2,ROOT::RVec<Prec>>::merge(std::shared_ptr<TH2> hist)
+std::shared_ptr<TH2> Histogram<2,ROOT::RVec<Prec>>::merge(std::vector<std::shared_ptr<TH2>> results) const
 {
-	m_hist->Add(hist.get());
+	auto merged_result = std::shared_ptr<TH2>(static_cast<TH2*>(results[0]->Clone()));
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
+	}
+	return merged_result;
 }
 
 template <typename Prec>
 std::shared_ptr<TH2> Histogram<2,ROOT::RVec<Prec>>::result() const
 {
-	return m_hist; //!
+	return m_hist;
 }
 
 template <typename Prec>
@@ -296,21 +316,25 @@ void Histogram<3,ROOT::RVec<Prec>>::fill(ana::observable<ROOT::RVec<Prec>> xs, a
 	if (xs->size() != zs->size()) {
 		throw std::runtime_error("x- and z-arrays do not share the same size");
 	}
-	for (size_t ix ; ix<xs->size() ; ++ix) {
+	for (size_t ix=0; ix<xs->size() ; ++ix) {
 		m_hist->Fill(xs.value()[ix],ys.value()[ix],zs.value()[ix],w);
 	}
 }
 
 template <typename Prec>
-void Histogram<3,ROOT::RVec<Prec>>::merge(std::shared_ptr<TH3> hist)
+std::shared_ptr<TH3> Histogram<3,ROOT::RVec<Prec>>::merge(std::vector<std::shared_ptr<TH3>> results) const
 {
-	m_hist->Add(hist.get());
+	auto merged_result = std::shared_ptr<TH3>(static_cast<TH3*>(results[0]->Clone()));
+	for (size_t islot=1 ; islot<results.size() ; ++islot) {
+		merged_result->Add(results[islot].get());
+	}
+	return merged_result;
 }
 
 template <typename Prec>
 std::shared_ptr<TH3> Histogram<3,ROOT::RVec<Prec>>::result() const
 {
-	return m_hist; //!
+	return m_hist;
 }
 
 template class Histogram<1,float>;
