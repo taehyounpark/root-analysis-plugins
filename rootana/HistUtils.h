@@ -11,7 +11,7 @@
 #include "TH2F.h"
 #include "TH3F.h"
 
-namespace HistogramUtils
+namespace HistUtils
 {
 
 	size_t getDim(TH1& hist);

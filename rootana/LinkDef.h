@@ -24,7 +24,7 @@
 #include "rootana/Tree.h"
 #include "rootana/RDS.h"
 
-#include "rootana/Histogram.h"
+#include "rootana/Hist.h"
 
 #ifdef __CINT__
 
@@ -48,12 +48,12 @@
 #pragma link C++ class ana::counter+;
 #pragma link C++ class ana::counter::experiment+;
 
-#pragma link C++ class Histogram<1,float>+;
-#pragma link C++ class Histogram<2,float>+;
-#pragma link C++ class Histogram<3,float>+;
-#pragma link C++ class Histogram<1,ROOT::RVec<float>>+;
-#pragma link C++ class Histogram<2,ROOT::RVec<float>>+;
-#pragma link C++ class Histogram<3,ROOT::RVec<float>>+;
+#pragma link C++ class Hist<1,float>+;
+#pragma link C++ class Hist<2,float>+;
+#pragma link C++ class Hist<3,float>+;
+#pragma link C++ class Hist<1,ROOT::RVec<float>>+;
+#pragma link C++ class Hist<2,ROOT::RVec<float>>+;
+#pragma link C++ class Hist<3,ROOT::RVec<float>>+;
 
 #pragma link C++ class Tree+;
 #pragma link C++ class RDS+;
