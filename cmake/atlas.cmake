@@ -37,12 +37,6 @@ atlas_add_library(
   AsgTools 
 )
 
-# for some reason, template instantations fail for analysis<Tree>
-# but are accessible from ROOT interpreter session through the linked dictionary
-# maybe it's a G++ problem
-# UPDATE: the above is not true, it was just a linking thing
-# however, it does fail for another reason: the operator definitions for delayed columns are not working
-# TODO: fix this
 atlas_add_executable( 
   tree_example examples/tree_example.cxx 
   INCLUDE_DIRS ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR}

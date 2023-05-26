@@ -3,8 +3,6 @@
 #include "TROOT.h"
 
 #include "ana/concurrent.h"
-#include "ana/strutils.h"
-#include "ana/vecutils.h"
 
 RDS::RDS(std::unique_ptr<RDataSource> rds) :
 	m_rds(std::move(rds))

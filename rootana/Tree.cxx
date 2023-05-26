@@ -5,8 +5,6 @@
 #include "TTreeReaderValue.h"
 #include "TTreeReaderArray.h"
 
-#include "ana/strutils.h"
-#include "ana/vecutils.h"
 #include "ana/sample.h"
 
 Tree::Tree(const std::vector<std::string>& allFiles, const std::string& treeName) :
