@@ -29,7 +29,7 @@ export(PACKAGE rootana)
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/rootana" )
 set(CONF_LIBRARY_DIRS "${PROJECT_BINARY_DIR}")
 set(CONF_LIBRARIES    rootana)
-configure_file(config.cmake.in
+configure_file(rootana-config.cmake.in
   "${PROJECT_BINARY_DIR}/config.cmake" @ONLY)
 
 set(ROOTANA_PYTHONPATH ${CMAKE_CURRENT_BINARY_DIR})
