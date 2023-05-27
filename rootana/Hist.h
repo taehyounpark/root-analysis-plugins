@@ -9,7 +9,7 @@
 #include "TH3.h"
 #include <ROOT/RVec.hxx>
 
-#include "ana/counter.h"
+#include "ana/abc.h"
 
 template <int Dim, typename Prec>
 class Hist;

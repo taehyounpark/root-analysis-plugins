@@ -1,25 +1,4 @@
-#include "ana/action.h"
-#include "ana/concurrent.h"
-
-#include "ana/column.h"
-#include "ana/constant.h"
-#include "ana/definition.h"
-#include "ana/equation.h"
-
-#include "ana/selection.h"
-#include "ana/cut.h"
-#include "ana/weight.h"
-
-#include "ana/counter.h"
-
-#include "ana/computation.h"
-#include "ana/experiment.h"
-#include "ana/cutflow.h"
-
-#include "ana/input.h"
-#include "ana/sample.h"
 #include "ana/analysis.h"
-#include "ana/output.h"
 
 #include "rootana/Tree.h"
 #include "rootana/RDS.h"

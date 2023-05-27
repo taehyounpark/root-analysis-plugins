@@ -14,8 +14,7 @@
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
-#include "ana/input.h"
-#include "ana/column.h"
+#include "ana/abc.h"
 
 class Event : public ana::input::dataset<Event>
 {

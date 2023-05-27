@@ -2,8 +2,6 @@
 
 #include "TROOT.h"
 
-#include "ana/concurrent.h"
-
 RDS::RDS(std::unique_ptr<RDataSource> rds) :
 	m_rds(std::move(rds))
 {}
@@ -11,9 +9,7 @@ RDS::RDS(std::unique_ptr<RDataSource> rds) :
 ana::input::partition RDS::allocate()
 {
   // force multithreading
-  if (ana::multithread::status()) {
-    ROOT::EnableImplicitMT(ana::multithread::concurrency());
-  }
+  ROOT::EnableImplicitMT();
   m_rds->SetNSlots(ROOT::GetThreadPoolSize() ? ROOT::GetThreadPoolSize() : 1);
 
   // get allocated slots 

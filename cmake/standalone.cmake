@@ -10,10 +10,7 @@ list(FILTER rootana_sources EXCLUDE REGEX ".*rootana/Event\.cxx$")
 
 add_library( rootana SHARED ${rootana_sources} ${rootana_headers})
 
-target_include_directories(
-  rootana
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ANA_INCLUDE_DIRS}
-)
+target_include_directories(rootana PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ana/include)
 
 target_compile_features(rootana PRIVATE cxx_std_17)
 

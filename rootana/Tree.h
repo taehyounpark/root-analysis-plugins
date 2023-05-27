@@ -15,8 +15,7 @@
 #include "TTreeReaderValue.h"
 #include "TTreeReaderArray.h"
 
-#include "ana/input.h"
-#include "ana/reader.h"
+#include "ana/abc.h"
 
 class Tree : public ana::input::dataset<Tree>
 {
