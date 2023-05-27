@@ -2,11 +2,11 @@
 project(rootana)
 
 file(GLOB rootana_headers rootana/*.h)
-file(GLOB rootana_sources rootana/*.cxx)
-list(FILTER rootana_headers EXCLUDE REGEX ".*rootana/LinkDef\.h$")
 list(FILTER rootana_headers EXCLUDE REGEX ".*rootana/Event\.h$")
-list(FILTER rootana_sources EXCLUDE REGEX ".*rootana/Event\.cxx$")
-#message(${rootana_sources})
+
+file(GLOB rootana_sources Root/*.cxx)
+list(FILTER rootana_sources EXCLUDE REGEX ".*Root/Event\.cxx$")
+list(FILTER rootana_headers EXCLUDE REGEX ".*Root/LinkDef\.h$")
 
 add_library( rootana SHARED ${rootana_sources} ${rootana_headers})
 
@@ -21,7 +21,7 @@ target_link_libraries(rootana ana ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROO
 
 ROOT_GENERATE_DICTIONARY(
   rootana_dict ${rootana_headers}
-  LINKDEF rootana/LinkDef.h
+  LINKDEF Root/LinkDef.h
   MODULE rootana
 )
 
