@@ -93,7 +93,7 @@ int main() {
       return (p2+q2).Mod();
     })(llp4, met, met_phi);
 
-  auto incl = ds.filter<weight>("incl").evaluate(mc_weight * el_sf * mu_sf);
+  auto incl = ds.filter<weight>("incl")(mc_weight * el_sf * mu_sf);
 
   auto nlep_req = ds.constant(2);
   auto cut_2los = incl.filter<cut>("2l")(nlep_sel == nlep_req).filter<cut>("2los", [](const VecF& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);

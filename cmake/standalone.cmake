@@ -1,16 +1,17 @@
 
 project(rootana)
 
-file(GLOB rootana_headers rootana/*.h)
-list(FILTER rootana_headers EXCLUDE REGEX ".*rootana/Event\.h$")
+file(GLOB rootanaHeaders rootana/*.h)
+list(FILTER rootanaHeaders EXCLUDE REGEX ".*rootana/Event\.h$")
 
-file(GLOB rootana_sources Root/*.cxx)
-list(FILTER rootana_sources EXCLUDE REGEX ".*Root/Event\.cxx$")
-list(FILTER rootana_headers EXCLUDE REGEX ".*Root/LinkDef\.h$")
+file(GLOB rootanaSources Root/*.cxx)
+list(FILTER rootanaSources EXCLUDE REGEX ".*Root/Event\.cxx$")
+list(FILTER rootanaHeaders EXCLUDE REGEX ".*Root/LinkDef\.h$")
 
-add_library( rootana SHARED ${rootana_sources} ${rootana_headers})
+add_library( rootana SHARED ${rootanaSources} ${rootanaHeaders})
 
-target_include_directories(rootana PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ana/include)
+set(ANA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/ana/include/)
+target_include_directories(rootana PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ANA_INCLUDE_DIR})
 
 target_compile_features(rootana PRIVATE cxx_std_17)
 
@@ -20,7 +21,7 @@ find_library(ROOT_RDATAFRAME_LIBRARY ROOTDataFrame HINTS ${ROOT_LIBRARY_DIR} REQ
 target_link_libraries(rootana ana ROOT::Core ROOT::RIO ROOT::Hist ROOT::Tree ROOT::TreePlayer ROOT::Imt ROOT::ROOTVecOps ROOT::ROOTDataFrame ROOT::Physics)
 
 ROOT_GENERATE_DICTIONARY(
-  rootana_dict ${rootana_headers}
+  rootana_dict ${rootanaHeaders}
   LINKDEF Root/LinkDef.h
   MODULE rootana
 )
@@ -28,7 +29,7 @@ ROOT_GENERATE_DICTIONARY(
 export(PACKAGE rootana)
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/rootana" )
 set(CONF_LIBRARY_DIRS "${PROJECT_BINARY_DIR}")
-set(CONF_LIBRARIES    rootana)
+set(CONF_LIBRARIES rootana)
 configure_file(rootana-config.cmake.in
   "${PROJECT_BINARY_DIR}/config.cmake" @ONLY)
 
@@ -40,6 +41,11 @@ install(DIRECTORY
   EXPORT rootanaConfig
   DESTINATION lib
   )
+
+add_executable(tree_example examples/tree_example.cxx)
+target_compile_features(tree_example PRIVATE cxx_std_17)
+target_include_directories(tree_example PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ANA_INCLUDE_DIRS} ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR})
+target_link_libraries(tree_example ana rootana ${ROOT_LIBRARIES})
 
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")

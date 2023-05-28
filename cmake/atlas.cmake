@@ -10,6 +10,7 @@ atlas_subdir( rootana )
 find_package( ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad ROOTVecOps Tree TreePlayer Rint Postscript Matrix Physics MathCore Thread MultiProc ROOTDataFrame )
 find_library( ROOT_TREEPLAYER_LIBRARY TreePlayer HINTS ${ROOT_LIBRARY_DIR} REQUIRED )
 find_library( ROOT_RVECOPS_LIBRARY ROOTVecOps HINTS ${ROOT_LIBRARY_DIR} REQUIRED )
+
 set(ANA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/ana/include/)
 
 atlas_add_root_dictionary( 
