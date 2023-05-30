@@ -34,7 +34,6 @@ int main() {
   auto ds = ana::analysis<Event>({
     "/cvmfs/atlas-nightlies.cern.ch/repo/data/data-art/ASG/DAOD_PHYS/p5169/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13167_p5169/DAOD_PHYS.29445530._000001.pool.root.1",
   },"CollectionTree");
-
   auto allMuons = ds.read<xAOD::MuonContainer>("Muons");
   auto eventInfo = ds.read<xAOD::EventInfo>("EventInfo");
 

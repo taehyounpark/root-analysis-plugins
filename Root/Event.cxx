@@ -15,7 +15,7 @@ Event::Event(const std::vector<std::string>& inputFiles, const std::string& coll
 	xAOD::Init().ignore();
 }
 
-double Event::normalize() const
+double Event::normalize()
 {
 	return 1.0;  // can (should?) normalize xAOD::CutBookkeeper sumOfWeights
 }

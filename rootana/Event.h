@@ -27,10 +27,11 @@ public:
 
 public:
 	Event(const std::vector<std::string>& inputFiles, const std::string& collection = "CollectionTree", const std::string& metadata = "MetaData");
-	virtual ~Event() = default;
+	~Event() = default;
 
 	ana::input::partition allocate();
-	double normalize() const;
+	double normalize();
+
 	std::shared_ptr<Loop> read() const;
 
 protected:
