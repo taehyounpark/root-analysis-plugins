@@ -10,13 +10,13 @@ Tree::Tree(const std::vector<std::string>& allFiles, const std::string& treeName
 	m_allFiles(allFiles)
 {}
 
-ana::input::partition Tree::allocate()
+ana::dataset::partition Tree::allocate()
 {
 	ROOT::EnableThreadSafety();
 	ROOT::EnableImplicitMT();
 
 	TDirectory::TContext c;
-	ana::input::partition parts;
+	ana::dataset::partition parts;
 
 	// offset to account for global entry position
 	long long offset = 0ll;
@@ -70,17 +70,17 @@ Tree::Reader::Reader(std::unique_ptr<TTree> tree) :
 	m_treeReader = std::make_unique<TTreeReader>(m_tree.get());
 }
 
-void Tree::Reader::start(const ana::input::range& part)
+void Tree::Reader::start(const ana::dataset::range& part)
 {
 	m_treeReader->SetEntriesRange(part.begin,part.end);
 }
 
-void Tree::Reader::next(const ana::input::range&, unsigned long long)
+void Tree::Reader::next(const ana::dataset::range&, unsigned long long)
 {
 	m_treeReader->Next();
 }
 
-void Tree::Reader::finish(const ana::input::range&)
+void Tree::Reader::finish(const ana::dataset::range&)
 {
 	// nothing to do
 }

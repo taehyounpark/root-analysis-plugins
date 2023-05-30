@@ -6,7 +6,7 @@ RDS::RDS(std::unique_ptr<RDataSource> rds) :
 	m_rds(std::move(rds))
 {}
 
-ana::input::partition RDS::allocate()
+ana::dataset::partition RDS::allocate()
 {
   // force multithreading
   ROOT::EnableImplicitMT();
@@ -14,7 +14,7 @@ ana::input::partition RDS::allocate()
 
   // get allocated slots 
   auto slots = m_rds->GetEntryRanges();
-  ana::input::partition partition;
+  ana::dataset::partition partition;
   for (size_t islot=0 ; islot<slots.size() ; ++islot) {
     partition.add_part(islot, slots[islot].first, slots[islot].second);
   }
@@ -43,17 +43,17 @@ RDS::Reader::Reader(RDataSource& rds) :
   m_rds(&rds)
 {}
 
-void RDS::Reader::start(const ana::input::range& part)
+void RDS::Reader::start(const ana::dataset::range& part)
 {
   m_rds->InitSlot(part.slot, part.begin);
 }
 
-void RDS::Reader::next(const ana::input::range& part, unsigned long long entry)
+void RDS::Reader::next(const ana::dataset::range& part, unsigned long long entry)
 {
   m_rds->SetEntry(part.slot, entry);
 }
 
-void RDS::Reader::finish(const ana::input::range& part)
+void RDS::Reader::finish(const ana::dataset::range& part)
 {
   m_rds->FinaliseSlot(part.slot);
 }

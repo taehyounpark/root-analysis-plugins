@@ -8,9 +8,9 @@
 #include <ROOT/RVec.hxx>
 #include <ROOT/RDataSource.hxx>
 
-#include "ana/abc.h"
+#include "ana/analysis.h"
 
-class RDS : public ana::input::dataset<RDS>
+class RDS : public ana::dataset::input<RDS>
 {
 
 private:
@@ -26,7 +26,7 @@ public:
 	RDS(std::unique_ptr<RDataSource> rds);
 	~RDS() = default;
 
-	ana::input::partition allocate();
+	ana::dataset::partition allocate();
 	std::shared_ptr<Reader> read() const;
 
 	void start();
@@ -38,7 +38,7 @@ protected:
 };
 
 
-class RDS::Reader : public ana::input::reader<Reader>
+class RDS::Reader : public ana::dataset::reader<Reader>
 {
 
 public:
@@ -46,11 +46,11 @@ public:
 	~Reader() = default;
 
 	template <typename T>
-	std::shared_ptr<Column<T>> read(const ana::input::range& part, const std::string& name) const;
+	std::shared_ptr<Column<T>> read(const ana::dataset::range& part, const std::string& name) const;
 
- 	void start(const ana::input::range& part);
-	void next(const ana::input::range& part, unsigned long long entry);
- 	void finish(const ana::input::range& part);
+ 	void start(const ana::dataset::range& part);
+	void next(const ana::dataset::range& part, unsigned long long entry);
+ 	void finish(const ana::dataset::range& part);
 
 protected:
   RDataSource* m_rds;
@@ -80,7 +80,7 @@ protected:
 };
 
 template <typename T>
-std::shared_ptr<RDS::Column<T>> RDS::Reader::read(const ana::input::range& part, const std::string& name) const
+std::shared_ptr<RDS::Column<T>> RDS::Reader::read(const ana::dataset::range& part, const std::string& name) const
 {
   auto columnReaders = m_rds->GetColumnReaders<T>(name.c_str());
 	return std::make_shared<Column<T>>(name,columnReaders[part.slot]);

@@ -15,9 +15,9 @@
 #include "TTreeReaderValue.h"
 #include "TTreeReaderArray.h"
 
-#include "ana/abc.h"
+#include "ana/analysis.h"
 
-class Tree : public ana::input::dataset<Tree>
+class Tree : public ana::dataset::input<Tree>
 {
 
 public:
@@ -30,7 +30,7 @@ public:
 	Tree(const std::vector<std::string>& filePaths, const std::string& treeName);
 	~Tree() = default;
 
- 	ana::input::partition allocate();
+ 	ana::dataset::partition allocate();
 	std::shared_ptr<Reader> read() const;
 
 protected:
@@ -40,18 +40,18 @@ protected:
 
 };
 
-class Tree::Reader : public ana::input::reader<Reader>
+class Tree::Reader : public ana::dataset::reader<Reader>
 {
 public:
 	Reader(std::unique_ptr<TTree> tree);
 	~Reader() = default;
 
 	template <typename U>
-	std::shared_ptr<Branch<U>> read(const ana::input::range&, const std::string& branchName) const;
+	std::shared_ptr<Branch<U>> read(const ana::dataset::range&, const std::string& branchName) const;
 
- 	void start(const ana::input::range& part);
-	void next(const ana::input::range& part, unsigned long long entry);
- 	void finish(const ana::input::range& part);
+ 	void start(const ana::dataset::range& part);
+	void next(const ana::dataset::range& part, unsigned long long entry);
+ 	void finish(const ana::dataset::range& part);
 
 protected:
 	std::unique_ptr<TTree>       m_tree; 
@@ -164,7 +164,7 @@ protected:
 
 
 template <typename U>
-std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const ana::input::range&, const std::string& branchName) const
+std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const ana::dataset::range&, const std::string& branchName) const
 {
 	return std::make_shared<Branch<U>>(branchName,*m_treeReader);
 }

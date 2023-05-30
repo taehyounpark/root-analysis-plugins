@@ -20,11 +20,11 @@ double Event::normalize()
 	return 1.0;  // can (should?) normalize xAOD::CutBookkeeper sumOfWeights
 }
 
-ana::input::partition Event::allocate()
+ana::dataset::partition Event::allocate()
 {
 	TDirectory::TContext c;
 
-	ana::input::partition parts;
+	ana::dataset::partition parts;
 	unsigned int ipart = 0;
 	long long offset = 0;
 
@@ -75,19 +75,19 @@ Event::Loop::Loop(TTree* tree)
 	};
 }
 
-void Event::Loop::start(const ana::input::range&)
+void Event::Loop::start(const ana::dataset::range&)
 {
 	// nothing to do
 }
 
-void Event::Loop::next(const ana::input::range&, unsigned long long entry)
+void Event::Loop::next(const ana::dataset::range&, unsigned long long entry)
 {
 	if (m_event->getEntry(entry)<0) {
 		throw std::runtime_error("failed to get entry");
 	} 
 }
 
-void Event::Loop::finish(const ana::input::range&)
+void Event::Loop::finish(const ana::dataset::range&)
 {
 	// nothing to do
 }

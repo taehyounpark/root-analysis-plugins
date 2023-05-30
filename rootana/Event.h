@@ -14,9 +14,9 @@
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TStore.h"
 
-#include "ana/abc.h"
+#include "ana/analysis.h"
 
-class Event : public ana::input::dataset<Event>
+class Event : public ana::dataset::input<Event>
 {
 
 public:
@@ -29,7 +29,7 @@ public:
 	Event(const std::vector<std::string>& inputFiles, const std::string& collection = "CollectionTree", const std::string& metadata = "MetaData");
 	~Event() = default;
 
-	ana::input::partition allocate();
+	ana::dataset::partition allocate();
 	double normalize();
 
 	std::shared_ptr<Loop> read() const;
@@ -42,18 +42,18 @@ protected:
 	std::vector<std::string> m_goodFiles;
 };
 
-class Event::Loop : public ana::input::reader<Loop>
+class Event::Loop : public ana::dataset::reader<Loop>
 {
 public:
 	Loop(TTree* tree);
 	~Loop() = default;
 
 	template <typename U>
-	std::shared_ptr<Container<U>> read(const ana::input::range& part, const std::string& name) const;
+	std::shared_ptr<Container<U>> read(const ana::dataset::range& part, const std::string& name) const;
 
- 	void start(const ana::input::range& part);
-	void next(const ana::input::range& part, unsigned long long entry);
- 	void finish(const ana::input::range& part);
+ 	void start(const ana::dataset::range& part);
+	void next(const ana::dataset::range& part, unsigned long long entry);
+ 	void finish(const ana::dataset::range& part);
 
 protected:
   std::unique_ptr<xAOD::TEvent> m_event;
@@ -90,7 +90,7 @@ protected:
 };
 
 template <typename U>
-std::shared_ptr<Event::Container<U>> Event::Loop::read(const ana::input::range&, const std::string& containerName) const
+std::shared_ptr<Event::Container<U>> Event::Loop::read(const ana::dataset::range&, const std::string& containerName) const
 {
 	return std::make_shared<Container<U>>(containerName,*m_event);
 }
