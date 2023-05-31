@@ -75,9 +75,9 @@ void Tree::Reader::start(const ana::dataset::range& part)
 	m_treeReader->SetEntriesRange(part.begin,part.end);
 }
 
-void Tree::Reader::next(const ana::dataset::range&, unsigned long long)
+void Tree::Reader::next(const ana::dataset::range&, unsigned long long entry)
 {
-	m_treeReader->Next();
+	m_treeReader->SetEntry(entry);
 }
 
 void Tree::Reader::finish(const ana::dataset::range&)

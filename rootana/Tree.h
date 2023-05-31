@@ -71,7 +71,7 @@ public:
 	{}
 	~Branch() = default;
 
-	virtual void initialize() override
+	virtual void initialize(const ana::dataset::range&) override
 	{
 		m_treeReaderValue = std::make_unique<TTreeReaderValue<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
@@ -100,7 +100,7 @@ public:
 	{}
 	~Branch() = default;
 
-	virtual void initialize() override
+	virtual void initialize(const ana::dataset::range&) override
 	{
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
@@ -137,7 +137,7 @@ public:
 	{}
 	~Branch() = default;
 
-	virtual void initialize() override
+	virtual void initialize(const ana::dataset::range&) override
 	{
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<bool>>(*m_treeReader,this->m_branchName.c_str());
 	}
