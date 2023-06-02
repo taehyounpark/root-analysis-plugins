@@ -63,8 +63,7 @@ class RDS::Column : public ana::column::reader<T>
 {
 
 public:
-	Column(const std::string& name, T** cursor) :
-		ana::column::reader<T>(name),
+	Column(T** cursor) :
 		m_cursor(cursor)
 	{}
 	~Column() = default;
@@ -83,5 +82,5 @@ template <typename T>
 std::shared_ptr<RDS::Column<T>> RDS::Reader::read(const ana::dataset::range& part, const std::string& name) const
 {
   auto columnReaders = m_rds->GetColumnReaders<T>(name.c_str());
-	return std::make_shared<Column<T>>(name,columnReaders[part.slot]);
+	return std::make_shared<Column<T>>(columnReaders[part.slot]);
 }

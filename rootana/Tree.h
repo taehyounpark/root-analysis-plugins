@@ -65,7 +65,6 @@ class Tree::Branch : public ana::column::reader<T>
 
 public:
 	Branch(const std::string& branchName, TTreeReader& treeReader) :
-		ana::column::reader<T>(branchName),
 		m_branchName(branchName),
 		m_treeReader(&treeReader)
 	{}
@@ -94,7 +93,6 @@ class Tree::Branch<ROOT::RVec<T>> : public ana::column::reader<ROOT::RVec<T>>
 
 public:
 	Branch(const std::string& branchName, TTreeReader& treeReader) :
-		ana::column::reader<ROOT::RVec<T>>(branchName),
 		m_branchName(branchName),
 		m_treeReader(&treeReader)
 	{}
@@ -131,7 +129,6 @@ class Tree::Branch<ROOT::RVec<bool>> : public ana::column::reader<ROOT::RVec<boo
 
 public:
 	Branch(const std::string& branchName, TTreeReader& treeReader) :
-		ana::column::reader<ROOT::RVec<bool>>(branchName),
 		m_branchName(branchName),
 		m_treeReader(&treeReader)
 	{}

@@ -68,7 +68,6 @@ class Event::Container : public ana::column::reader<T>
 
 public:
 	Container(const std::string& containerName, xAOD::TEvent& event) :
-	ana::column::reader<T>(containerName),
 	m_containerName(containerName),
 	m_event(&event)
 	{}
