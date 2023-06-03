@@ -27,7 +27,7 @@ public:
 	~RDS() = default;
 
 	ana::dataset::partition allocate();
-	std::shared_ptr<Reader> read() const;
+	std::unique_ptr<Reader> read() const;
 
 	void start();
 	void finish();
@@ -46,7 +46,7 @@ public:
 	~Reader() = default;
 
 	template <typename T>
-	std::shared_ptr<Column<T>> read(const ana::dataset::range& part, const std::string& name) const;
+	std::unique_ptr<Column<T>> read(const ana::dataset::range&, const std::string&) const;
 
  	void start(const ana::dataset::range& part);
 	void next(const ana::dataset::range& part, unsigned long long entry);
@@ -68,7 +68,7 @@ public:
 	{}
 	~Column() = default;
 
-	virtual const T& read() const override
+	virtual const T& read(const ana::dataset::range&, unsigned long long) const override
 	{
 		return static_cast<const T&>(**m_cursor);
 	}
@@ -79,8 +79,8 @@ protected:
 };
 
 template <typename T>
-std::shared_ptr<RDS::Column<T>> RDS::Reader::read(const ana::dataset::range& part, const std::string& name) const
+std::unique_ptr<RDS::Column<T>> RDS::Reader::read(const ana::dataset::range& part, const std::string& name) const
 {
   auto columnReaders = m_rds->GetColumnReaders<T>(name.c_str());
-	return std::make_shared<Column<T>>(columnReaders[part.slot]);
+	return std::make_unique<Column<T>>(columnReaders[part.slot]);
 }

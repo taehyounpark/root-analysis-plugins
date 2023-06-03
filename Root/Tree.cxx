@@ -54,14 +54,14 @@ ana::dataset::partition Tree::allocate()
 	return parts;
 }
 
-std::shared_ptr<Tree::Reader> Tree::read() const
+std::unique_ptr<Tree::Reader> Tree::read() const
 {
 	auto tree = std::make_unique<TChain>(m_treeName.c_str(),m_treeName.c_str());
 	tree->ResetBit(kMustCleanup);
 	for (auto const& filePath : m_goodFiles) {
 		tree->Add(filePath.c_str());
 	}
-	return std::make_shared<Reader>(std::move(tree));
+	return std::make_unique<Reader>(std::move(tree));
 }
 
 Tree::Reader::Reader(std::unique_ptr<TTree> tree) :

@@ -31,7 +31,7 @@ public:
 	~Tree() = default;
 
  	ana::dataset::partition allocate();
-	std::shared_ptr<Reader> read() const;
+	std::unique_ptr<Reader> read() const;
 
 protected:
 	std::vector<std::string> m_allFiles;
@@ -47,7 +47,7 @@ public:
 	~Reader() = default;
 
 	template <typename U>
-	std::shared_ptr<Branch<U>> read(const ana::dataset::range&, const std::string& branchName) const;
+	std::unique_ptr<Branch<U>> read(const ana::dataset::range&, const std::string& branchName) const;
 
  	void start(const ana::dataset::range& part);
 	void next(const ana::dataset::range& part, unsigned long long entry);
@@ -75,7 +75,7 @@ public:
 		m_treeReaderValue = std::make_unique<TTreeReaderValue<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual T const& read() const override
+	virtual T const& read(const ana::dataset::range&, unsigned long long) const override
 	{
 		return **m_treeReaderValue;
 	}
@@ -103,7 +103,7 @@ public:
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<T>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual ROOT::RVec<T> const& read() const override
+	virtual ROOT::RVec<T> const& read(const ana::dataset::range&, unsigned long long) const override
 	{
     if (auto arraySize = m_treeReaderArray->GetSize()) {
       ROOT::RVec<T> readArray(&m_treeReaderArray->At(0), arraySize);
@@ -139,7 +139,7 @@ public:
 		m_treeReaderArray = std::make_unique<TTreeReaderArray<bool>>(*m_treeReader,this->m_branchName.c_str());
 	}
 
-	virtual ROOT::RVec<bool> const& read() const override
+	virtual ROOT::RVec<bool> const& read(const ana::dataset::range&, unsigned long long) const override
 	{
     if (m_treeReaderArray->GetSize()) {
       ROOT::RVec<bool> readArray(m_treeReaderArray->begin(), m_treeReaderArray->end());
@@ -161,7 +161,7 @@ protected:
 
 
 template <typename U>
-std::shared_ptr<Tree::Branch<U>> Tree::Reader::read(const ana::dataset::range&, const std::string& branchName) const
+std::unique_ptr<Tree::Branch<U>> Tree::Reader::read(const ana::dataset::range&, const std::string& branchName) const
 {
-	return std::make_shared<Branch<U>>(branchName,*m_treeReader);
+	return std::make_unique<Branch<U>>(branchName,*m_treeReader);
 }

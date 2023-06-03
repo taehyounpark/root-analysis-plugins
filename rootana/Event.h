@@ -32,7 +32,7 @@ public:
 	ana::dataset::partition allocate();
 	double normalize();
 
-	std::shared_ptr<Loop> read() const;
+	std::unique_ptr<Loop> read() const;
 
 protected:
 	std::vector<std::string> m_inputFiles;
@@ -49,7 +49,7 @@ public:
 	~Loop() = default;
 
 	template <typename U>
-	std::shared_ptr<Container<U>> read(const ana::dataset::range& part, const std::string& name) const;
+	std::unique_ptr<Container<U>> read(const ana::dataset::range& part, const std::string& name) const;
 
  	void start(const ana::dataset::range& part);
 	void next(const ana::dataset::range& part, unsigned long long entry);
@@ -73,7 +73,7 @@ public:
 	{}
 	~Container() = default;
 
-	virtual T const& read() const override
+	virtual T const& read(const ana::dataset::range& part, unsigned long long entry) const override
 	{
 		T const* container(nullptr);
     if (m_event->retrieve(container,this->m_containerName.c_str()).isFailure()) {
@@ -89,7 +89,7 @@ protected:
 };
 
 template <typename U>
-std::shared_ptr<Event::Container<U>> Event::Loop::read(const ana::dataset::range&, const std::string& containerName) const
+std::unique_ptr<Event::Container<U>> Event::Loop::read(const ana::dataset::range&, const std::string& containerName) const
 {
-	return std::make_shared<Container<U>>(containerName,*m_event);
+	return std::make_unique<Container<U>>(containerName,*m_event);
 }

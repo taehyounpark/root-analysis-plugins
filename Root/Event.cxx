@@ -57,14 +57,14 @@ ana::dataset::partition Event::allocate()
 	return parts;
 }
 
-std::shared_ptr<Event::Loop> Event::read() const 
+std::unique_ptr<Event::Loop> Event::read() const 
 {
 	auto tree = std::make_unique<TChain>(m_treeName.c_str(),m_treeName.c_str());
 	for (auto const& filePath : m_goodFiles) {
 		tree->Add(filePath.c_str());
 	}
 	tree->ResetBit(kMustCleanup);
-	return std::make_shared<Loop>(tree.release());
+	return std::make_unique<Loop>(tree.release());
 }
 
 Event::Loop::Loop(TTree* tree)

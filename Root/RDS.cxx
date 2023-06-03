@@ -34,9 +34,9 @@ void RDS::finish()
   m_rds->Finalise();
 }
 
-std::shared_ptr<RDS::Reader> RDS::read() const
+std::unique_ptr<RDS::Reader> RDS::read() const
 {
-	return std::make_shared<Reader>(*m_rds);
+	return std::make_unique<Reader>(*m_rds);
 }
 
 RDS::Reader::Reader(RDataSource& rds) :

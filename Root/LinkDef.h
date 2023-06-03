@@ -38,7 +38,7 @@
 #pragma link C++ class RDS+;
 #pragma link C++ class Event+;
 
-#pragma link C++ class ana::analysis<Tree>+;
+#pragma link C++ class ana::dataflow<Tree>+;
 
 #pragma link C++ class ana::output+;
 #pragma link C++ class Folder+;
