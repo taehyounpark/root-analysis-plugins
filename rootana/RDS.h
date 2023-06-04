@@ -27,7 +27,7 @@ public:
 	~RDS() = default;
 
 	ana::dataset::partition allocate();
-	std::unique_ptr<Reader> read() const;
+	std::unique_ptr<Reader> read(const ana::dataset::range& part) const;
 
 	void start();
 	void finish();

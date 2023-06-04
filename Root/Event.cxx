@@ -57,7 +57,7 @@ ana::dataset::partition Event::allocate()
 	return parts;
 }
 
-std::unique_ptr<Event::Loop> Event::read() const 
+std::unique_ptr<Event::Loop> Event::read(const ana::dataset::range&) const 
 {
 	auto tree = std::make_unique<TChain>(m_treeName.c_str(),m_treeName.c_str());
 	for (auto const& filePath : m_goodFiles) {

@@ -54,7 +54,7 @@ ana::dataset::partition Tree::allocate()
 	return parts;
 }
 
-std::unique_ptr<Tree::Reader> Tree::read() const
+std::unique_ptr<Tree::Reader> Tree::read(const ana::dataset::range&) const
 {
 	auto tree = std::make_unique<TChain>(m_treeName.c_str(),m_treeName.c_str());
 	tree->ResetBit(kMustCleanup);

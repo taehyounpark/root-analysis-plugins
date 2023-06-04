@@ -34,7 +34,7 @@ void RDS::finish()
   m_rds->Finalise();
 }
 
-std::unique_ptr<RDS::Reader> RDS::read() const
+std::unique_ptr<RDS::Reader> RDS::read(const ana::dataset::range&) const
 {
 	return std::make_unique<Reader>(*m_rds);
 }

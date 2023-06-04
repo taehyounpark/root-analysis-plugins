@@ -32,7 +32,7 @@ public:
 	ana::dataset::partition allocate();
 	double normalize();
 
-	std::unique_ptr<Loop> read() const;
+	std::unique_ptr<Loop> read(const ana::dataset::range& part) const;
 
 protected:
 	std::vector<std::string> m_inputFiles;
