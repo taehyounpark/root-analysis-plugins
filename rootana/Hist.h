@@ -15,7 +15,7 @@ template <int Dim, typename Prec>
 class Hist;
 
 template <typename Prec>
-class Hist<1,Prec> : public ana::counter::logic<std::shared_ptr<TH1>(Prec)>
+class Hist<1,Prec> : public ana::aggregation::logic<std::shared_ptr<TH1>(Prec)>
 {
 
 public:
@@ -34,7 +34,7 @@ protected:
 };
 
 template <typename Prec>
-class Hist<2,Prec> : public ana::counter::logic<std::shared_ptr<TH2>(Prec,Prec)>
+class Hist<2,Prec> : public ana::aggregation::logic<std::shared_ptr<TH2>(Prec,Prec)>
 {
 
 public:
@@ -51,7 +51,7 @@ protected:
 };
 
 template <typename Prec>
-class Hist<3,Prec> : public ana::counter::logic<std::shared_ptr<TH3>(Prec,Prec,Prec)>
+class Hist<3,Prec> : public ana::aggregation::logic<std::shared_ptr<TH3>(Prec,Prec,Prec)>
 {
 
 public:
@@ -68,7 +68,7 @@ protected:
 };
 
 template <typename Prec>
-class Hist<1,ROOT::RVec<Prec>> : public ana::counter::logic<std::shared_ptr<TH1>(ROOT::RVec<Prec>)>
+class Hist<1,ROOT::RVec<Prec>> : public ana::aggregation::logic<std::shared_ptr<TH1>(ROOT::RVec<Prec>)>
 {
 
 public:
@@ -87,7 +87,7 @@ protected:
 };
 
 template <typename Prec>
-class Hist<2,ROOT::RVec<Prec>> : public ana::counter::logic<std::shared_ptr<TH2>(ROOT::RVec<Prec>,ROOT::RVec<Prec>)>
+class Hist<2,ROOT::RVec<Prec>> : public ana::aggregation::logic<std::shared_ptr<TH2>(ROOT::RVec<Prec>,ROOT::RVec<Prec>)>
 {
 
 public:
@@ -105,7 +105,7 @@ protected:
 };
 
 template <typename Prec>
-class Hist<3,ROOT::RVec<Prec>> : public ana::counter::logic<std::shared_ptr<TH3>(ROOT::RVec<Prec>,ROOT::RVec<Prec>,ROOT::RVec<Prec>)>
+class Hist<3,ROOT::RVec<Prec>> : public ana::aggregation::logic<std::shared_ptr<TH3>(ROOT::RVec<Prec>,ROOT::RVec<Prec>,ROOT::RVec<Prec>)>
 {
 
 public:
@@ -126,7 +126,7 @@ protected:
 
 template <typename Prec>
 Hist<1,Prec>::Hist(const std::string& name, unsigned int nbins, double xmin, double xmax) :
-	ana::counter::logic<std::shared_ptr<TH1>(Prec)>()
+	ana::aggregation::logic<std::shared_ptr<TH1>(Prec)>()
 {
 	m_hist = HistUtils::makeHist<1,Prec>(nbins, xmin, xmax);
 	m_hist->SetName(name.c_str());
@@ -134,7 +134,7 @@ Hist<1,Prec>::Hist(const std::string& name, unsigned int nbins, double xmin, dou
 
 template <typename Prec>
 Hist<1,Prec>::Hist(const std::string& name, const std::vector<double>& xbins) :
-	ana::counter::logic<std::shared_ptr<TH1>(Prec)>()
+	ana::aggregation::logic<std::shared_ptr<TH1>(Prec)>()
 {
 	m_hist = HistUtils::makeHist<1,Prec>(xbins);
 	m_hist->SetName(name.c_str());
@@ -144,6 +144,12 @@ template <typename Prec>
 void Hist<1,Prec>::fill(ana::observable<Prec> x, double w)
 {
 	m_hist->Fill(x.value(),w);
+}
+
+template <typename Prec>
+std::shared_ptr<TH1> Hist<1,Prec>::result() const
+{
+	return m_hist;
 }
 
 template <typename Prec>
@@ -157,14 +163,8 @@ std::shared_ptr<TH1> Hist<1,Prec>::merge(std::vector<std::shared_ptr<TH1>> resul
 }
 
 template <typename Prec>
-std::shared_ptr<TH1> Hist<1,Prec>::result() const
-{
-	return m_hist;
-}
-
-template <typename Prec>
 Hist<2,Prec>::Hist(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins) :
-	ana::counter::logic<std::shared_ptr<TH2>(Prec,Prec)>()
+	ana::aggregation::logic<std::shared_ptr<TH2>(Prec,Prec)>()
 {
 	m_hist = std::static_pointer_cast<TH2>(HistUtils::makeHist<2,Prec>(xbins,ybins));
 	m_hist->SetName(name.c_str());
@@ -194,7 +194,7 @@ std::shared_ptr<TH2> Hist<2,Prec>::result() const
 
 template <typename Prec>
 Hist<3,Prec>::Hist(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins, const std::vector<double>& zbins) :
-	ana::counter::logic<std::shared_ptr<TH3>(Prec,Prec,Prec)>()
+	ana::aggregation::logic<std::shared_ptr<TH3>(Prec,Prec,Prec)>()
 {
 	m_hist = std::static_pointer_cast<TH3>(HistUtils::makeHist<3,Prec>(xbins,ybins,zbins));
 	m_hist->SetName(name.c_str());
@@ -226,7 +226,7 @@ std::shared_ptr<TH3> Hist<3,Prec>::result() const
 
 template <typename Prec>
 Hist<1,ROOT::RVec<Prec>>::Hist(const std::string& name, unsigned int nbins, double xmin, double xmax) :
-	ana::counter::logic<std::shared_ptr<TH1>(ROOT::RVec<Prec>)>()
+	ana::aggregation::logic<std::shared_ptr<TH1>(ROOT::RVec<Prec>)>()
 {
 	m_hist = HistUtils::makeHist<1,Prec>(nbins,xmin,xmax);
 	m_hist->SetName(name.c_str());
@@ -234,7 +234,7 @@ Hist<1,ROOT::RVec<Prec>>::Hist(const std::string& name, unsigned int nbins, doub
 
 template <typename Prec>
 Hist<1,ROOT::RVec<Prec>>::Hist(const std::string& name, const std::vector<double>& xbins) :
-	ana::counter::logic<std::shared_ptr<TH1>(ROOT::RVec<Prec>)>()
+	ana::aggregation::logic<std::shared_ptr<TH1>(ROOT::RVec<Prec>)>()
 {
 	m_hist = HistUtils::makeHist<1,Prec>(xbins);
 	m_hist->SetName(name.c_str());
@@ -266,7 +266,7 @@ std::shared_ptr<TH1> Hist<1,ROOT::RVec<Prec>>::result() const
 
 template <typename Prec>
 Hist<2,ROOT::RVec<Prec>>::Hist(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins) :
-	ana::counter::logic<std::shared_ptr<TH2>(ROOT::RVec<Prec>,ROOT::RVec<Prec>)>()
+	ana::aggregation::logic<std::shared_ptr<TH2>(ROOT::RVec<Prec>,ROOT::RVec<Prec>)>()
 {
 	m_hist = std::static_pointer_cast<TH2>(HistUtils::makeHist<2,Prec>(xbins,ybins));
 	m_hist->SetName(name.c_str());
@@ -301,7 +301,7 @@ std::shared_ptr<TH2> Hist<2,ROOT::RVec<Prec>>::result() const
 
 template <typename Prec>
 Hist<3,ROOT::RVec<Prec>>::Hist(const std::string& name, const std::vector<double>& xbins, const std::vector<double>& ybins, const std::vector<double>& zbins) :
-	ana::counter::logic<std::shared_ptr<TH3>(ROOT::RVec<Prec>,ROOT::RVec<Prec>,ROOT::RVec<Prec>)>()
+	ana::aggregation::logic<std::shared_ptr<TH3>(ROOT::RVec<Prec>,ROOT::RVec<Prec>,ROOT::RVec<Prec>)>()
 {
 	m_hist = std::static_pointer_cast<TH3>(HistUtils::makeHist<3,Prec>(xbins,ybins,zbins));
 	m_hist->SetName(name.c_str());

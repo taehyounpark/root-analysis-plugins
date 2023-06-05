@@ -10,7 +10,7 @@
 #include "TDirectory.h"
 #include "TFile.h"
 
-class Folder : public ana::counter::summary<Folder>
+class Folder : public ana::aggregation::summary<Folder>
 {
 
 public:
@@ -31,18 +31,18 @@ public:
   Folder(const std::string& basePath) : m_basePath(basePath) {}
   ~Folder() = default;
 
-  void record(const std::string& variationName, const std::string& selectionPath, std::shared_ptr<TObject> counterResult)
+  void record(const std::string& variationName, const std::string& selectionPath, std::shared_ptr<TObject> aggregationResult)
   {
     if (m_variedResults.find(variationName)==m_variedResults.end()) {
-      m_variedResults.emplace(std::make_pair(variationName,std::unordered_map<std::string,std::shared_ptr<TObject>>({std::make_pair(selectionPath,counterResult)})));
+      m_variedResults.emplace(std::make_pair(variationName,std::unordered_map<std::string,std::shared_ptr<TObject>>({std::make_pair(selectionPath,aggregationResult)})));
     } else {
-      m_variedResults[variationName].emplace(std::make_pair(selectionPath,counterResult));
+      m_variedResults[variationName].emplace(std::make_pair(selectionPath,aggregationResult));
     }
   }
 
-  void record(const std::string& selectionPath, std::shared_ptr<TObject> counterResult)
+  void record(const std::string& selectionPath, std::shared_ptr<TObject> aggregationResult)
   {
-    m_nominalResults.emplace(std::make_pair(selectionPath,counterResult));
+    m_nominalResults.emplace(std::make_pair(selectionPath,aggregationResult));
   }
 
   void output(TFile& outputFile)

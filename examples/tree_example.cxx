@@ -5,9 +5,9 @@
 #include <functional>
 
 #include <ROOT/RVec.hxx>
+#include "Math/Vector4D.h"
 #include "TPad.h"
 #include "TFile.h"
-#include "TLorentzVector.h"
 #include "TTreeReaderValue.h"
 #include "TTreeReader.h"
 #include "TVector2.h"
@@ -26,7 +26,7 @@ using VecF = ROOT::RVec<float>;
 using VecD = ROOT::RVec<double>;
 using VecI = ROOT::RVec<int>;
 using VecUI = ROOT::RVec<unsigned int>;
-using P4 = TLorentzVector;
+using P4 = ROOT::Math::PtEtaPhiEVector;
 
 class NthP4 : public ana::column::definition<P4(VecD, VecD, VecD, VecD)>
 {
@@ -38,9 +38,7 @@ public:
   virtual ~NthP4() = default;
 
   virtual P4 evaluate(ana::observable<VecD> pt, ana::observable<VecD> eta, ana::observable<VecD> phi, ana::observable<VecD> es) const override {
-    P4 p4;
-    p4.SetPtEtaPhiE(pt->at(m_index),eta->at(m_index),phi->at(m_index),es->at(m_index));
-    return p4;
+    return P4(pt->at(m_index),eta->at(m_index),phi->at(m_index),es->at(m_index));
   }
 
 protected:
@@ -101,7 +99,7 @@ int main() {
 
   auto incl = df.filter<weight>("incl")(mc_weight * el_sf * mu_sf);
 
-  auto nlep_req = df.constant(2);
+  auto nlep_req = df.constant<unsigned int>(2);
   auto cut_2los = incl.filter<cut>("2l")(nlep_sel == nlep_req).filter<cut>("2los", [](const VecF& lep_charge){return lep_charge.at(0)+lep_charge.at(1)==0;})(lep_Q);
   auto cut_2ldf = cut_2los.channel<cut>("2ldf", [](const VecI& lep_type){return lep_type.at(0)+lep_type.at(1)==24;})(lep_type);
   auto cut_2lsf = cut_2los.channel<cut>("2lsf", [](const VecI& lep_type){return (lep_type.at(0)+lep_type.at(1)==22)||(lep_type.at(0)+lep_type.at(1)==26);})(lep_type);
@@ -129,14 +127,14 @@ int main() {
   // // delete out_file;
 
   auto mll_vars_2los = df.book<Hist<1,float>>("mll",50,0,100).fill(mll).at(cut_2los);
-  auto mll_nom_2los = mll_vars_2los.get_nominal();
+  auto mll_nom_2los = mll_vars_2los.nominal();
   auto mll_var_2los = mll_vars_2los["lp4_up"];
   mll_nom_2los->SetLineColor(kBlack); mll_nom_2los->Draw("hist");
   mll_var_2los->SetLineColor(kRed); mll_var_2los->Draw("E same");
   gPad->Print("mll_varied_2los.pdf");
 
   auto mll_vars_channels = df.book<Hist<1,float>>("mll",50,0,200).fill(mll).at(cut_2ldf, cut_2lsf);
-  std::cout << mll_vars_channels.get_nominal()["2ldf"]->GetMean() << std::endl;
+  std::cout << mll_vars_channels.nominal()["2ldf"]->GetMean() << std::endl;
   std::cout << mll_vars_channels["lp4_up"]["2lsf"]->GetMean() << std::endl;
 
   return 0;
