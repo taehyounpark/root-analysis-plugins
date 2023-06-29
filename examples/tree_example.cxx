@@ -15,9 +15,9 @@
 
 #include "ana/analysis.h"
 
-#include "rootana/Tree.h"
-#include "rootana/Hist.h"
-#include "rootana/Folder.h"
+#include "AnalysisPlugins/Tree.h"
+#include "AnalysisPlugins/Hist.h"
+#include "AnalysisPlugins/Folder.h"
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -88,7 +88,8 @@ int main() {
   auto l1p4 = df.define<NthP4>(0)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
   auto l2p4 = df.define<NthP4>(1)(lep_pt_sel, lep_eta_sel, lep_phi_sel, lep_E_sel);
 
-  auto llp4 = l1p4+l2p4;
+  // auto llp4 = l1p4+l2p4;
+  auto llp4 = df.define([](const P4& p4, const P4& q4){return p4+q4;})(l1p4, l2p4);
   auto mll = df.define([](const P4& p4){return p4.M();})(llp4);
   auto pth = df.define(
     [](const P4& p4, float q, float q_phi) {

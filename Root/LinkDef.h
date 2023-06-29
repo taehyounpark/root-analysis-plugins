@@ -1,9 +1,9 @@
 #include "ana/analysis.h"
 
-#include "rootana/Tree.h"
-#include "rootana/RDS.h"
+#include "AnalysisPlugins/Tree.h"
+#include "AnalysisPlugins/RDS.h"
 
-#include "rootana/Hist.h"
+#include "AnalysisPlugins/Hist.h"
 
 #ifdef __CINT__
 

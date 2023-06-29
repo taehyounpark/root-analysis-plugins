@@ -14,9 +14,9 @@
 
 #include "ana/analysis.h"
 
-#include "rootana/Event.h"
-#include "rootana/Hist.h"
-#include "rootana/Folder.h"
+#include "AnalysisPlugins/Event.h"
+#include "AnalysisPlugins/Hist.h"
+#include "AnalysisPlugins/Folder.h"
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODMuon/MuonContainer.h>
